@@ -3,3 +3,19 @@
 body{
   background: white;
 }
+.outer-container {
+  height: 600px;
+  width: 500px;
+  background: #eee;
+  border: 5px solid #ccc;
+}
+.main-screen {
+  height: 100%;
+  visibility: visible;
+}
+.game-window {
+  height: 100%;
+  width: 500px;
+  background: #222;
+  float: left;
+}
