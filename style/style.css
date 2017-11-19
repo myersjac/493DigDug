@@ -19,3 +19,13 @@ body{
   background: #222;
   float: left;
 }
+
+/*IDs*/
+#start-button {
+	margin:auto;
+	display:block;
+}
+#options-button {
+	margin:auto;
+	display:block;
+}
