@@ -1,27 +1,48 @@
 //Globals
 
 //Game window is composed of 10 by 14
-var space_has_tunnel[11][14];//this is 10 ground rows and the 0th row is the top of the ground
+// var space_has_tunnel[11][14];//this is 10 ground rows and the 0th row is the top of the ground
 
 //can only be between 0 to 10 for x and 0 to 13 for y
-class coordinate_pair( { 
-	var x_coord;
-	var y_coord;
-}
+class coordinate_pair { 
+	
+	constructor() {
+		this.x_coord = 0;
+		this.y_coord = 0;
+	};
+};
 
 class smurf { 
-	var coordinates = new coordinate_pair();
-}
-smurf = new smurf();
+	 constructor(){
+	 	this.coordinates = new coordinate_pair();
+	 };
+};
 
 class enemy { 
-	var coordinates = new coordinate_pair();
-	var type; //dragon or orange midget
+	constructor(){
+		this.coordinates = new coordinate_pair();
+		this.type; //dragon or orange midget
+	};
+};
+
+var KEYS = {
+  left: 37,
+  up: 38,
+  right: 39,
+  down: 40,
+  shift: 16,
+  spacebar: 32
 }
 
 //this records all the keystrokes of a user
-var movement_cache[5] = {new coordinate_pair(), new coordinate_pair(), new coordinate_pair(), new coordinate_pair(), new coordinate_pair()};
 var movement_cache_size = 0;
+var movement_cache = new Array();
+var n = 5;
+for (var i = 0; i < n; i++){
+    movement_cache.push(new coordinate_pair());
+}
+
+
 
 function keydownRouter(e) {
   switch (e.which) {
@@ -49,14 +70,22 @@ function keydownRouter(e) {
 //main
 $(document).ready( function() { 
 
+	smurf = new smurf();
+	smurf.coordinates.x_coord = 7;
+	smurf.coordinates.y_coord = 0;
+	$('#smurf').css("top", smurf.coordinates.y_coord*75 );
+	$('#smurf').css("left", smurf.coordinates.x_coord*75 );
+
+
+
 	//game begins
-	$("#start-button").click({
+	// $("#start-button").click({
 		$(window).keydown(keydownRouter);
 		 setInterval( function() { 
 			actuate_movement_cache();
 		 }, 500);
 		
-	});
+	// });
 
 });
 
@@ -78,13 +107,21 @@ function alien_ai_move() {
 //called at an interval
 //only fills up the movement cache so much otherwise there will be lag
 function smurf_move(next_movement) { 
+	
+	console.log(next_movement);
+
 	let x = next_movement.x_coord;
 	let y = next_movement.y_coord;
 	
 	//check if space is clear
 	
 	//move smurf to new position
-	
+	$('#smurf').css("top", y*75 );
+	$('#smurf').css("left", x*75 );
+	smurf.coordinates.x_coord = x;
+	smurf.coordinates.y_coord = y;
+
+
 }
 
 //empties one space for a tunnel
