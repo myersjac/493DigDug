@@ -19,10 +19,9 @@ body{
   background: #222;
   float: left;
 }
-.img-digdug-mainscreen {
-	display: block;
-	margin: auto;
-	width: 50%;
+#img-digdug-mainscreen {
+    display: block;
+    margin: 20 auto;
 }
 
 /*IDs*/
