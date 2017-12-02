@@ -12,6 +12,8 @@ body{
 .main-screen {
   height: 100%;
   visibility: visible;
+  position: relative;
+
 }
 .game-window {
   height: 100%;
@@ -36,14 +38,18 @@ body{
 
 #smurf{
   position: absolute;
-  z-index: 5;
+  z-index: 7;
+}
+.tunnelclass { 
+  z-index:5;
+  position: absolute;
 }
 
 .blocks{
   position: absolute;
   z-index: 4;
-  margin-top: 103px;
-  margin-left: 13px;
+  /*margin-top: 33px; //73
+  margin-left: 13px;*/
 }
 
 #game-screen{
