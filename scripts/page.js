@@ -184,6 +184,35 @@ function initialize_tunnels() {
 		tmp.y_coord = i;
 		create_tunnel(tmp);
 	}
+
+
+	for(let i = 6; i < 14; ++i) {
+		let tmp = new coordinate_pair();
+		tmp.x_coord = 1;
+		tmp.y_coord = i;
+		create_tunnel(tmp);
+	}
+
+	for(let i = 9; i < 15; ++i) {
+		let tmp = new coordinate_pair();
+		tmp.x_coord = i;
+		tmp.y_coord = 3;
+		create_tunnel(tmp);
+	}
+
+	for(let i = 7; i < 14; ++i) {
+		let tmp = new coordinate_pair();
+		tmp.x_coord = i;
+		tmp.y_coord = 15;
+		create_tunnel(tmp);
+	}
+
+	for(let i = 6; i < 13; ++i) {
+		let tmp = new coordinate_pair();
+		tmp.x_coord = 12; 
+		tmp.y_coord = i;
+		create_tunnel(tmp);
+	}
 }
 
 //checks movement cache, if not empty, produces next movement
