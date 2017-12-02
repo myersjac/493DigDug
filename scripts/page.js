@@ -1,8 +1,12 @@
 //Globals
 
 //Game window is composed of 10 by 14
-// var space_has_tunnel[11][14];//this is 10 ground rows and the 0th row is the top of the ground
+var space_has_tunnel; // = new Array[11][14];this is 10 ground rows and the 0th row is the top of the ground
 
+//standards
+var STANDARD_SIZE = 30;
+var MAX_BOARD_WIDTH = 16;
+var MAX_BOARD_HEIGHT = 18;
 //can only be between 0 to 10 for x and 0 to 13 for y
 class coordinate_pair { 
 	
@@ -51,6 +55,7 @@ function keydownRouter(e) {
       break;
     case KEYS.spacebar:
     // If you would like to add arrow button features
+    break;
     case KEYS.left:
 		add_to_movement_cache(smurf.coordinates.x_coord - 1, smurf.coordinates.y_coord);
 		break;
@@ -76,10 +81,24 @@ $(document).ready( function() {
 	smurf = new smurf();
 	smurf.coordinates.x_coord = 7;
 	smurf.coordinates.y_coord = 0;
-	$('#smurf').css("top", smurf.coordinates.y_coord*30 );
-	$('#smurf').css("left", smurf.coordinates.x_coord*30 );
+	$('#smurf').css("top", smurf.coordinates.y_coord*STANDARD_SIZE);
+	$('#smurf').css("left", smurf.coordinates.x_coord*STANDARD_SIZE);
 
-
+	//intialize tunnel array
+	space_has_tunnel = new Array(MAX_BOARD_HEIGHT);
+	for (var row1 = 0; row1 < MAX_BOARD_WIDTH; row1++) { 
+		space_has_tunnel[row1] = new Array(MAX_BOARD_WIDTH);
+		for (var col1 = 0; col1 < MAX_BOARD_HEIGHT; col1++) { 	
+			//first row never has a tunnel
+			if (0 == col1) { 
+				space_has_tunnel[row1][col1] = true;
+			}
+			else { 
+				space_has_tunnel[row1][col1] = false;
+			}
+		}
+	}
+	
 
 	//game begins
 	// $("#start-button").click({
@@ -93,11 +112,18 @@ $(document).ready( function() {
 
     var block = ""
 
-    for ( var row = 0; row < 17; row++) {
-		for( var col = 0 ; col < 16 ; col++ ){
+    for ( var row = 1; row < MAX_BOARD_HEIGHT; row++) {
+		for( var col = 0 ; col < MAX_BOARD_WIDTH ; col++ ){
 		
-			block = "<img class='blocks' style='left:" + col*30 + ";top:" + row*30 + "' src='";
+			block = "<img class='blocks' style='left:" + col*30 + ";top:" + ((row*STANDARD_SIZE + 30)) + "' src='";
 			
+			//add smurf
+			if (1 == row && 7 == col) { 
+				let smurf_guy = `<img src="img/character_walk.png" style="left:` + col*30 
+														+ `;top:30px;" id="smurf" width="30" height="30">`;
+				$("#game-screen").append(smurf_guy);
+			}
+
 			if (row <=3) { //yellow
 				block += "img/ground_yellow.png" + "'>";
 			}
@@ -124,6 +150,8 @@ $(document).ready( function() {
 		console.log(col);
 	} //row
 
+	initialize_tunnels();
+
 });
 
 
@@ -136,7 +164,26 @@ function move(character, x, y) {
 //check where smurf is and always moves closer
 function alien_ai_move() { 
 
+}
 
+function create_tunnel(cp) { 
+	//no tunnel
+	if (space_has_tunnel[parseInt(cp.x_coord)][parseInt(cp.y_coord)] == false) { 
+		var tunnel = `<img src="img/tunnel.png" class="tunnelclass" style="left:` + cp.x_coord*STANDARD_SIZE
+					+ `;top:` + cp.y_coord*STANDARD_SIZE +`px;" width="30" height="30">`;
+		$("#game-screen").append(tunnel);
+		space_has_tunnel[parseInt(cp.x_coord)][parseInt(cp.y_coord)] = true;
+	}//
+}
+
+function initialize_tunnels() { 
+
+	for (let i = 1; i < 8; ++i) {
+		let tmp = new coordinate_pair();
+		tmp.x_coord = 7;
+		tmp.y_coord = i;
+		create_tunnel(tmp);
+	}
 }
 
 //checks movement cache, if not empty, produces next movement
@@ -160,10 +207,14 @@ function smurf_move(next_movement) {
 
 	console.log("new top: " + $('#smurf').css("top"));
 	console.log("new left: " + $('#smurf').css("left"));
-
-
+	//update smurf coordinates
 	smurf.coordinates.x_coord = x;
 	smurf.coordinates.y_coord = y;
+
+	//create tunnel behind image
+	if (!space_has_tunnel[next_movement.x_coord][next_movement.y_coord]) { 
+		create_tunnel(next_movement);
+	}
 
 
 }
@@ -193,10 +244,11 @@ function add_to_movement_cache(x, y) {
 	
 	//check if valid movement!
 
-	if(x<0 || y<0){
+	if(x<0 || y<0 || x >= MAX_BOARD_WIDTH || y >= MAX_BOARD_HEIGHT){
 		tmp.x_coord = 0;
 		tmp.y_coord = 0;
 		 //don't want negative values AKA him going off screen
+		 return;
 	}
 	
 	//don't make larger or will lag
@@ -209,10 +261,3 @@ function add_to_movement_cache(x, y) {
 		++movement_cache_size;
 	}
 }
-
-
-
-
-
-
-
