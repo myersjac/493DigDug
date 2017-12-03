@@ -4,7 +4,7 @@ body{
   background: white;
 }
 .outer-container {
-  height: 600px;
+  height: 570px;
   width: 480px;
   background: #eee;
   border: 5px solid #ccc;
@@ -18,7 +18,7 @@ body{
 .game-window {
   height: 100%;
   width: 480;
-  background: #222;
+  background: black;
   float: left;
 }
 #img-digdug-mainscreen {
@@ -28,12 +28,12 @@ body{
 
 /*IDs*/
 #start-button {
-	margin:auto;
-	display:block;
+  margin:auto;
+  display:block;
 }
 #options-button {
-	margin:auto;
-	display:block;
+  margin:auto;
+  display:block;
 }
 
 #smurf{

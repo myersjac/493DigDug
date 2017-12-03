@@ -231,6 +231,7 @@ function smurf_move(next_movement) {
 	console.log("old left: " + $('#smurf').css("left"));
 	
 	//move smurf to new position
+
 	$('#smurf').css("top", y * 30 );
 	$('#smurf').css("left", x * 30 );
 
