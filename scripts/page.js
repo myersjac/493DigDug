@@ -332,12 +332,12 @@ function initializeEnemies() {
 
 function initializeRocks() {
 	for(var i = 0; i < 16; i++) {
-		var rock = `<img src="img/falling_rock.png" class="rockclass" style="left:` + 30*i
+		var rock = `<img src="img/ground_darkred_rock.png" class="rockclass" style="left:` + 30*i
 					+ `px;top:` + 510 +`px;" width="30" height="30">`;
 		$("#game-screen").append(rock);
 	}
 	for(var i = 0; i < 16; i++) {
-		var rock = `<img src="img/falling_rock.png" class="rockclass" style="left:` + 30*i
+		var rock = `<img src="img/ground_darkred_rock.png" class="rockclass" style="left:` + 30*i
 					+ `px;top:` + 540 +`px;" width="30" height="30">`;
 		$("#game-screen").append(rock);
 	}
