@@ -273,7 +273,7 @@ function create_tunnel(cp) {
 					+ `;top:` + cp.y_coord*STANDARD_SIZE +`px;" width="30" height="30">`;
 		$("#game-screen").append(tunnel);
 		space_has_tunnel[parseInt(cp.x_coord)][parseInt(cp.y_coord)] = true;
-	}//
+	}
 }
 
 function initialize_tunnels() { 
