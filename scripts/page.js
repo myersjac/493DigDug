@@ -270,7 +270,7 @@ function create_tunnel(cp) {
 	//no tunnel
 	if (space_has_tunnel[parseInt(cp.x_coord)][parseInt(cp.y_coord)] == false) { 
 		var tunnel = `<img src="img/tunnel.png" class="tunnelclass" style="left:` + cp.x_coord*STANDARD_SIZE
-					+ `;top:` + cp.y_coord*STANDARD_SIZE +`px;" width="30" height="30">`;
+					+ `;top:` + cp.y_coord*STANDARD_SIZE +`px;">`;
 		$("#game-screen").append(tunnel);
 		space_has_tunnel[parseInt(cp.x_coord)][parseInt(cp.y_coord)] = true;
 	}
@@ -316,29 +316,29 @@ function initialize_tunnels() {
 
 function initializeEnemies() {
 	var dragon1 = `<img src="img/Fygar_Main_Screen.png" class="dragonclass" id="dragon1" style="left:` + 150
-					+ `px;top:` + 150 +`px;" width="30" height="30">`;
+					+ `px;top:` + 150 +`px;">`;
 	$("#game-screen").append(dragon1);
 	var dragon2 = `<img src="img/Fygar_Main_Screen.png" class="dragonclass" id="dragon2" style="left:` + 390
-					+ `px;top:` + 150 +`px;" width="30" height="30">`;
+					+ `px;top:` + 150 +`px;">`;
 
 	$("#game-screen").append(dragon2);
 	var pooka1 = `<img src="img/Pooka_Main_Screen.png" class="pookaclass" id="pooka1" style="left:` + 150
-					+ `px;top:` + 390 +`px;" width="30" height="30">`;
+					+ `px;top:` + 390 +`px;">`;
 	$("#game-screen").append(pooka1);
 	var pooka2 = `<img src="img/Pooka_Main_Screen.png" class="pookaclass" id="pooka2" style="left:` + 390
-					+ `px;top:` + 390 +`px;" width="30" height="30">`;
+					+ `px;top:` + 390 +`px;">`;
 	$("#game-screen").append(pooka2);
 }
 
 function initializeRocks() {
 	for(var i = 0; i < 16; i++) {
 		var rock = `<img src="img/ground_darkred_rock.png" class="rockclass" style="left:` + 30*i
-					+ `px;top:` + 510 +`px;" width="30" height="30">`;
+					+ `px;top:` + 510 +`px;">`;
 		$("#game-screen").append(rock);
 	}
 	for(var i = 0; i < 16; i++) {
 		var rock = `<img src="img/ground_darkred_rock.png" class="rockclass" style="left:` + 30*i
-					+ `px;top:` + 540 +`px;" width="30" height="30">`;
+					+ `px;top:` + 540 +`px;">`;
 		$("#game-screen").append(rock);
 	}
 }
