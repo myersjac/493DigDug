@@ -1,3 +1,28 @@
+//LinkedList implementation copied from thatjsdude.com
+function LinkedList() {
+	this.head = null;
+}
+LinkedList.prototype.push = function(val) {
+	var node = {
+		value: val,
+		next: null
+	}
+	if(!this.head) {
+		this.head = node;
+	}
+	else {
+		current = this.head;
+		while(current.next) {
+			current = current.next;
+		}
+		current.next = node;
+	}
+}
+LinkedList.prototype.delete_first_elt = function() {
+	if(this.head.next != null) {
+		this.head = this.head.next;
+	}
+}
 //Globals
 
 //Game window is composed of 10 by 14
@@ -7,12 +32,16 @@ var space_has_tunnel; // = new Array[11][14];this is 10 ground rows and the 0th 
 var STANDARD_SIZE = 30;
 var MAX_BOARD_WIDTH = 16;
 var MAX_BOARD_HEIGHT = 18;
+var pooka1_steps;
+var pooka2_steps;
+var dragon1_steps;
+var dragon2_steps;
 //can only be between 0 to 10 for x and 0 to 13 for y
 class coordinate_pair { 
 	
-	constructor() {
-		this.x_coord = 0;
-		this.y_coord = 0;
+	constructor(x,y) {
+		this.x_coord = x;
+		this.y_coord = y;
 	};
 };
 
@@ -83,6 +112,11 @@ $(document).ready( function() {
 	smurf.coordinates.y_coord = 0;
 	$('#smurf').css("top", smurf.coordinates.y_coord*STANDARD_SIZE);
 	$('#smurf').css("left", smurf.coordinates.x_coord*STANDARD_SIZE);
+	pooka1_steps = new LinkedList();
+	pooka2_steps = new LinkedList();
+	dragon1_steps = new LinkedList();
+	dragon2_steps = new LinkedList();
+
 
 	//intialize tunnel array
 	space_has_tunnel = new Array(MAX_BOARD_HEIGHT);
@@ -102,10 +136,6 @@ $(document).ready( function() {
 
 	//game begins
 	// $("#start-button").click({
-		$(window).keydown(keydownRouter);
-		 setInterval( function() {
-			actuate_movement_cache();
-		 }, 500);
 		
 	// });
     
@@ -151,13 +181,83 @@ $(document).ready( function() {
 	} //row
 
 	initialize_tunnels();
+	initializeEnemies();
+	initializeRocks();
 
+	//Pooka 1 initializing linked list
+	for(let j = 12; j >= 5; j--) {
+		let tmp = new coordinate_pair(5, j);
+		pooka1_steps.push(tmp);
+	}
+	pooka1_steps.push(new coordinate_pair(6, 5));
+	pooka1_steps.push(new coordinate_pair(7, 5));
+
+	//Pooka 2 initializing linked list
+	for(let j = 12; j >= 5; j--) {
+		let tmp = new coordinate_pair(13, j);
+		pooka2_steps.push(tmp);
+	}
+	for(let j = 12; j >= 7; j--) {
+		let tmp = new coordinate_pair(j,5);
+		pooka2_steps.push(tmp);
+	}
+
+	//Dragon 1 initializing linked list
+	dragon1_steps.push(new coordinate_pair(6, 5));
+	dragon1_steps.push(new coordinate_pair(7, 5));
+
+	//Dragon 2 initializing linked list
+	for(let j = 12; j >= 7; j--) {
+		let tmp = new coordinate_pair(j,5);
+		dragon2_steps.push(tmp);
+	}
+
+	for(let j = 4; j >= 1; j--) {
+		pooka1_steps.push(new coordinate_pair(7, j));
+		pooka2_steps.push(new coordinate_pair(7, j));
+		dragon1_steps.push(new coordinate_pair(7, j));
+		dragon2_steps.push(new coordinate_pair(7, j));
+	}
+	$(window).keydown(keydownRouter);
+		setInterval( function() {
+		actuate_movement_cache();
+		move();
+	}, 500);
 });
 
 
 //moves any character to a new space and removes wall
-function move(character, x, y) { 
+function move() {
 
+	//updates coordinates of pooka 1 
+	let coords = pooka1_steps.head;
+	$("#pooka1").css("left", (coords.value.x_coord * STANDARD_SIZE));
+	$("#pooka1").css("top", (coords.value.y_coord * STANDARD_SIZE));
+	pooka1_steps.delete_first_elt();
+	console.log("Pooka 1 x: " + (coords.value.x_coord * STANDARD_SIZE));
+	console.log("Pooka 1 y: " + (coords.value.y_coord * STANDARD_SIZE));
+
+	coords = pooka2_steps.head;
+	$("#pooka2").css("left", (coords.value.x_coord * STANDARD_SIZE));
+	$("#pooka2").css("top", (coords.value.y_coord * STANDARD_SIZE));
+	pooka2_steps.delete_first_elt();
+	console.log("Pooka 2 x: " + (coords.value.x_coord * STANDARD_SIZE));
+	console.log("Pooka 2 y: " + (coords.value.y_coord * STANDARD_SIZE));
+
+	coords = dragon1_steps.head;
+	$("#dragon1").css("left", (coords.value.x_coord * STANDARD_SIZE));
+	$("#dragon1").css("top", (coords.value.y_coord * STANDARD_SIZE));
+	dragon1_steps.delete_first_elt();
+	console.log("Dragon 1 x: " + (coords.value.x_coord * STANDARD_SIZE));
+	console.log("Dragon 1 y: " + (coords.value.y_coord * STANDARD_SIZE));
+
+	coords = dragon2_steps.head;
+	$("#dragon2").css("left", (coords.value.x_coord * STANDARD_SIZE));
+	$("#dragon2").css("top", (coords.value.y_coord * STANDARD_SIZE));
+	dragon2_steps.delete_first_elt();
+
+	console.log("Dragon 2 x: " + (coords.x_coord * STANDARD_SIZE));
+	console.log("Dragon 2 y: " + (coords.y_coord * STANDARD_SIZE));
 
 }
 
@@ -178,40 +278,68 @@ function create_tunnel(cp) {
 
 function initialize_tunnels() { 
 
-	for (let i = 1; i < 8; ++i) {
+	for (let i = 5; i <= 13; ++i) {
 		let tmp = new coordinate_pair();
-		tmp.x_coord = 7;
+		tmp.x_coord = 5;
 		tmp.y_coord = i;
 		create_tunnel(tmp);
 	}
 
 
-	for(let i = 6; i < 14; ++i) {
+	for(let i = 5; i <= 13; ++i) {
 		let tmp = new coordinate_pair();
-		tmp.x_coord = 1;
+		tmp.x_coord = 13;
 		tmp.y_coord = i;
-		create_tunnel(tmp);
-	}
-
-	for(let i = 9; i < 15; ++i) {
-		let tmp = new coordinate_pair();
-		tmp.x_coord = i;
-		tmp.y_coord = 3;
-		create_tunnel(tmp);
-	}
-
-	for(let i = 7; i < 14; ++i) {
-		let tmp = new coordinate_pair();
-		tmp.x_coord = i;
-		tmp.y_coord = 15;
 		create_tunnel(tmp);
 	}
 
 	for(let i = 6; i < 13; ++i) {
 		let tmp = new coordinate_pair();
-		tmp.x_coord = 12; 
+		tmp.x_coord = i;
+		tmp.y_coord = 5;
+		create_tunnel(tmp);
+	}
+
+	for(let i = 6; i < 13; ++i) {
+		let tmp = new coordinate_pair();
+		tmp.x_coord = i;
+		tmp.y_coord = 13;
+		create_tunnel(tmp);
+	}
+	for(let i = 1; i < 8; ++i) {
+		let tmp = new coordinate_pair();
+		tmp.x_coord = 7;
 		tmp.y_coord = i;
 		create_tunnel(tmp);
+	}
+}
+
+function initializeEnemies() {
+	var dragon1 = `<img src="img/Fygar_Main_Screen.png" class="dragonclass" id="dragon1" style="left:` + 150
+					+ `px;top:` + 150 +`px;" width="30" height="30">`;
+	$("#game-screen").append(dragon1);
+	var dragon2 = `<img src="img/Fygar_Main_Screen.png" class="dragonclass" id="dragon2" style="left:` + 390
+					+ `px;top:` + 150 +`px;" width="30" height="30">`;
+
+	$("#game-screen").append(dragon2);
+	var pooka1 = `<img src="img/Pooka_Main_Screen.png" class="pookaclass" id="pooka1" style="left:` + 150
+					+ `px;top:` + 390 +`px;" width="30" height="30">`;
+	$("#game-screen").append(pooka1);
+	var pooka2 = `<img src="img/Pooka_Main_Screen.png" class="pookaclass" id="pooka2" style="left:` + 390
+					+ `px;top:` + 390 +`px;" width="30" height="30">`;
+	$("#game-screen").append(pooka2);
+}
+
+function initializeRocks() {
+	for(var i = 0; i < 16; i++) {
+		var rock = `<img src="img/falling_rock.png" class="rockclass" style="left:` + 30*i
+					+ `px;top:` + 510 +`px;" width="30" height="30">`;
+		$("#game-screen").append(rock);
+	}
+	for(var i = 0; i < 16; i++) {
+		var rock = `<img src="img/falling_rock.png" class="rockclass" style="left:` + 30*i
+					+ `px;top:` + 540 +`px;" width="30" height="30">`;
+		$("#game-screen").append(rock);
 	}
 }
 
@@ -245,6 +373,10 @@ function smurf_move(next_movement) {
 	if (!space_has_tunnel[next_movement.x_coord][next_movement.y_coord]) { 
 		create_tunnel(next_movement);
 	}
+	pooka1_steps.push(new coordinate_pair(x, y));
+	pooka2_steps.push(new coordinate_pair(x, y));
+	dragon1_steps.push(new coordinate_pair(x, y));
+	dragon2_steps.push(new coordinate_pair(x, y));
 
 
 }
@@ -274,7 +406,8 @@ function add_to_movement_cache(x, y) {
 	
 	//check if valid movement!
 
-	if(x<0 || y<0 || x >= MAX_BOARD_WIDTH || y >= MAX_BOARD_HEIGHT){
+	//-2 for rocks
+	if(x<0 || y<0 || x >= MAX_BOARD_WIDTH || y >= MAX_BOARD_HEIGHT - 1){
 		tmp.x_coord = 0;
 		tmp.y_coord = 0;
 		 //don't want negative values AKA him going off screen
