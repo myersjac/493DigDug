@@ -14,7 +14,6 @@
 	<div class='outer-container'>
 		<div class='game-window' id='game-window'>
 			<div class='main-screen'>
-<!-- 
 				<h1 style="color:white" align="center">Dig Dug</h1>
 				<h2 style="color:white" align="center">Created by: Anjana Rajagopal, Benjamin Erichsen, and Jacob Myers</h2>
 				<p style="color:white" align="center">Move: Up, Down, Left, and Right arrow keys</p>
@@ -22,14 +21,25 @@
 				<input type="button" id="start-button" value="Start Digging">
 				<input type="button" id="options-button" value="Options">
 				<img src="img/Dig_Dug.png" id="img-digdug-mainscreen">
-			 -->
-			 
-			 <div id="game-screen">
-			
+			</div>
+			 <div id="game-screen" style="display:none">
+				<div id="num-lives" style="float: left; margin-left: 5px; margin-top: -85px;">
+					<h2 style="color:white">Lives</h2>
+					<p>3</p>
+				</div>
+				<div id="num-points" align="right"; style="vertical-align: top;">
+					<h2 style="color:white">Points</h2>
+					<p>0</p>
+				</div>
 
 			 </div>
 
-			</div>
+			 <div id="game-over" style="display:none">
+			 	<h1 style="color:white" align="center">Game Over</h1>
+      			<h2 style="color:white" align="center" id="final-score"></h2>
+      			<input type="button" id="back-btn" value = "Go Back">
+			 </div>
+
 		</div>
 	</div>
 
