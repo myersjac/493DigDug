@@ -109,7 +109,7 @@ $(document).ready( function() {
 
 	smurf = new smurf();
 	smurf.coordinates.x_coord = 7;
-	smurf.coordinates.y_coord = 0;
+	smurf.coordinates.y_coord = 1;
 	$('#smurf').css("top", smurf.coordinates.y_coord*STANDARD_SIZE);
 	$('#smurf').css("left", smurf.coordinates.x_coord*STANDARD_SIZE);
 	pooka1_steps = new LinkedList();
@@ -133,7 +133,6 @@ $(document).ready( function() {
 		}
 	}
 	
-
 
 	//game begins
 	// $("#start-button").click({
@@ -186,7 +185,7 @@ $(document).ready( function() {
 	initializeRocks();
 
 	//Pooka 1 initializing linked list
-	for(let j = 12; j >= 5; j--) {
+	for(let j = 12; j > 4; j--) {
 		let tmp = new coordinate_pair(5, j);
 		pooka1_steps.push(tmp);
 	}
@@ -194,7 +193,7 @@ $(document).ready( function() {
 	pooka1_steps.push(new coordinate_pair(7, 5));
 
 	//Pooka 2 initializing linked list
-	for(let j = 12; j >= 5; j--) {
+	for(let j = 12; j > 4; j--) {
 		let tmp = new coordinate_pair(13, j);
 		pooka2_steps.push(tmp);
 	}
@@ -213,7 +212,7 @@ $(document).ready( function() {
 		dragon2_steps.push(tmp);
 	}
 
-	for(let j = 4; j >= 1; j--) {
+	for(let j = 4; j > 0; j--) {
 		pooka1_steps.push(new coordinate_pair(7, j));
 		pooka2_steps.push(new coordinate_pair(7, j));
 		dragon1_steps.push(new coordinate_pair(7, j));
@@ -226,6 +225,15 @@ $(document).ready( function() {
 	}, 500);
 });
 
+function check_if_killed(x_enemy, y_enemy) {
+	let x = smurf.coordinates.x_coord;
+	let y = smurf.coordinates.y_coord;
+	if (0 == (x - x_enemy) && 0 == (y-y_enemy)) { 
+	//	alert('killed');
+		console.log('killed');
+	}
+	
+}
 
 //moves any character to a new space and removes wall
 function move() {
@@ -237,6 +245,7 @@ function move() {
 	pooka1_steps.delete_first_elt();
 	console.log("Pooka 1 x: " + (coords.value.x_coord * STANDARD_SIZE));
 	console.log("Pooka 1 y: " + (coords.value.y_coord * STANDARD_SIZE));
+	check_if_killed(coords.value.x_coord, coords.value.y_coord);
 
 	coords = pooka2_steps.head;
 	$("#pooka2").css("left", (coords.value.x_coord * STANDARD_SIZE));
@@ -244,6 +253,7 @@ function move() {
 	pooka2_steps.delete_first_elt();
 	console.log("Pooka 2 x: " + (coords.value.x_coord * STANDARD_SIZE));
 	console.log("Pooka 2 y: " + (coords.value.y_coord * STANDARD_SIZE));
+	check_if_killed(coords.value.x_coord, coords.value.y_coord);
 
 	coords = dragon1_steps.head;
 	$("#dragon1").css("left", (coords.value.x_coord * STANDARD_SIZE));
@@ -251,14 +261,16 @@ function move() {
 	dragon1_steps.delete_first_elt();
 	console.log("Dragon 1 x: " + (coords.value.x_coord * STANDARD_SIZE));
 	console.log("Dragon 1 y: " + (coords.value.y_coord * STANDARD_SIZE));
+	check_if_killed(coords.value.x_coord, coords.value.y_coord);
 
 	coords = dragon2_steps.head;
 	$("#dragon2").css("left", (coords.value.x_coord * STANDARD_SIZE));
 	$("#dragon2").css("top", (coords.value.y_coord * STANDARD_SIZE));
 	dragon2_steps.delete_first_elt();
+	check_if_killed(coords.value.x_coord, coords.value.y_coord);
 
-	console.log("Dragon 2 x: " + (coords.x_coord * STANDARD_SIZE));
-	console.log("Dragon 2 y: " + (coords.y_coord * STANDARD_SIZE));
+	console.log("Dragon 2 x: " + (coords.value.x_coord * STANDARD_SIZE));
+	console.log("Dragon 2 y: " + (coords.value.y_coord * STANDARD_SIZE));
 
 }
 
