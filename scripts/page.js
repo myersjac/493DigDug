@@ -134,6 +134,7 @@ $(document).ready( function() {
 	}
 	
 
+
 	//game begins
 	// $("#start-button").click({
 		
