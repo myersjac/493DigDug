@@ -229,6 +229,16 @@ $(document).ready( function() {
 			actuate_movement_cache();
 			move();
 		}, 500);
+
+		var smurf_char = $("#smurf");
+		var pooka1 = $("#pooka1");
+		var pooka2 = $("#pooka2");
+		var dragon1 = $("#dragon1");
+		var dragon2 = $("#dragon2");
+
+		if(isColliding(smurf_char, pooka1) || isColliding(smurf_char, pooka2) || isColliding(smurf_char, dragon1) || isColliding(smurf_char, dragon2)) {
+			num_lives--;
+		}
 	}
 });
 
@@ -352,12 +362,12 @@ function initializeEnemies() {
 
 function initializeRocks() {
 	for(var i = 0; i < 16; i++) {
-		var rock = `<img src="img/ground_darkred_rock.png" class="rockclass" style="left:` + 30*i
+		var rock = `<img src="img/falling_rock.png" class="rockclass" style="left:` + 30*i
 					+ `px;top:` + 510 +`px;" width="30" height="30">`;
 		$("#game-screen").append(rock);
 	}
 	for(var i = 0; i < 16; i++) {
-		var rock = `<img src="img/ground_darkred_rock.png" class="rockclass" style="left:` + 30*i
+		var rock = `<img src="img/falling_rock.png" class="rockclass" style="left:` + 30*i
 					+ `px;top:` + 540 +`px;" width="30" height="30">`;
 		$("#game-screen").append(rock);
 	}
