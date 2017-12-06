@@ -68,19 +68,18 @@ var KEYS = {
 }
 
 //this records all the keystrokes of a user
-var movement_cache_size = 0;
 var movement_cache = new Array();
-var n = 5;
-for (var i = 0; i < n; i++){
-    movement_cache.push(new coordinate_pair());
-}
+var n = 3;
+// for (let i = 0; i < n; i++){
+//     movement_cache.push(new coordinate_pair());
+// }
 
 
 
 function keydownRouter(e) {
   switch (e.which) {
     case KEYS.shift:
-	  if (!gameover) { createAlien(); }
+	  if (!gameover) { }
       break;
     case KEYS.spacebar:
     // If you would like to add arrow button features
@@ -221,8 +220,14 @@ $(document).ready( function() {
 	$(window).keydown(keydownRouter);
 		setInterval( function() {
 		actuate_movement_cache();
-		move();
-	}, 500);
+		// move();
+	}, 200);
+
+	$(window).keydown(keydownRouter);
+		setInterval( function() {
+		// actuate_movement_cache();
+		// move();
+	}, 500);	
 });
 
 function check_if_killed(x_enemy, y_enemy) {
@@ -243,24 +248,24 @@ function move() {
 	$("#pooka1").css("left", (coords.value.x_coord * STANDARD_SIZE));
 	$("#pooka1").css("top", (coords.value.y_coord * STANDARD_SIZE));
 	pooka1_steps.delete_first_elt();
-	console.log("Pooka 1 x: " + (coords.value.x_coord * STANDARD_SIZE));
-	console.log("Pooka 1 y: " + (coords.value.y_coord * STANDARD_SIZE));
+	// console.log("Pooka 1 x: " + (coords.value.x_coord * STANDARD_SIZE));
+	// console.log("Pooka 1 y: " + (coords.value.y_coord * STANDARD_SIZE));
 	check_if_killed(coords.value.x_coord, coords.value.y_coord);
 
 	coords = pooka2_steps.head;
 	$("#pooka2").css("left", (coords.value.x_coord * STANDARD_SIZE));
 	$("#pooka2").css("top", (coords.value.y_coord * STANDARD_SIZE));
 	pooka2_steps.delete_first_elt();
-	console.log("Pooka 2 x: " + (coords.value.x_coord * STANDARD_SIZE));
-	console.log("Pooka 2 y: " + (coords.value.y_coord * STANDARD_SIZE));
+	// console.log("Pooka 2 x: " + (coords.value.x_coord * STANDARD_SIZE));
+	// console.log("Pooka 2 y: " + (coords.value.y_coord * STANDARD_SIZE));
 	check_if_killed(coords.value.x_coord, coords.value.y_coord);
 
 	coords = dragon1_steps.head;
 	$("#dragon1").css("left", (coords.value.x_coord * STANDARD_SIZE));
 	$("#dragon1").css("top", (coords.value.y_coord * STANDARD_SIZE));
 	dragon1_steps.delete_first_elt();
-	console.log("Dragon 1 x: " + (coords.value.x_coord * STANDARD_SIZE));
-	console.log("Dragon 1 y: " + (coords.value.y_coord * STANDARD_SIZE));
+	// console.log("Dragon 1 x: " + (coords.value.x_coord * STANDARD_SIZE));
+	// console.log("Dragon 1 y: " + (coords.value.y_coord * STANDARD_SIZE));
 	check_if_killed(coords.value.x_coord, coords.value.y_coord);
 
 	coords = dragon2_steps.head;
@@ -269,8 +274,8 @@ function move() {
 	dragon2_steps.delete_first_elt();
 	check_if_killed(coords.value.x_coord, coords.value.y_coord);
 
-	console.log("Dragon 2 x: " + (coords.value.x_coord * STANDARD_SIZE));
-	console.log("Dragon 2 y: " + (coords.value.y_coord * STANDARD_SIZE));
+	// console.log("Dragon 2 x: " + (coords.value.x_coord * STANDARD_SIZE));
+	// console.log("Dragon 2 y: " + (coords.value.y_coord * STANDARD_SIZE));
 
 }
 
@@ -373,7 +378,15 @@ function smurf_move(next_movement) {
 	
 	//move smurf to new position
 
+
+	$('#smurf').css("top", y * 8 );
+	$('#smurf').css("top", y * 15 );
+	$('#smurf').css("top", y * 23 );
 	$('#smurf').css("top", y * 30 );
+	
+	$('#smurf').css("left", x * 8 );
+	$('#smurf').css("left", x * 15 );
+	$('#smurf').css("left", x * 23 );
 	$('#smurf').css("left", x * 30 );
 
 	console.log("new top: " + $('#smurf').css("top"));
@@ -402,12 +415,19 @@ function clear_space() {
 //performs next movement in cache
 function actuate_movement_cache() { 
 	//no movement to perform
-	if (movement_cache_size == 0) { 
+	console.log(movement_cache.length);
+	console.log(movement_cache);
+
+	if (movement_cache.length == 0) { 
 		return;
 	}
 	else { 
-		smurf_move(movement_cache[movement_cache_size - 1]);
-		--movement_cache_size; //performed movement
+
+		console.log(movement_cache);
+
+		var i = movement_cache.shift();
+		console.log(i);
+		smurf_move(i);
 	}
 }
 
@@ -419,21 +439,53 @@ function add_to_movement_cache(x, y) {
 	
 	//check if valid movement!
 
-	//-2 for rocks
-	if(x<1 || y<1 || x >= MAX_BOARD_WIDTH || y >= MAX_BOARD_HEIGHT - 1){
-		tmp.x_coord = 1;
+
+	if(x <= 0){
+		tmp.x_coord = 0;
+	}
+
+	else if(y < 1){
 		tmp.y_coord = 1;
-		 //don't want negative values AKA him going off screen
-		 return;
 	}
-	
+
+	else if (x >= MAX_BOARD_WIDTH){
+		tmp.x_coord = MAX_BOARD_WIDTH - 1;
+	}
+
+	else if (y >= MAX_BOARD_HEIGHT){
+		tmp.y_coord = MAX_BOARD_HEIGHT - 1;
+	}
+
+	console.log("before: ");
+	console.log(movement_cache);
+	console.log(movement_cache.length);
+
 	//don't make larger or will lag
-	if (movement_cache_size == 5) { 
-		movement_cache[5] = tmp;
+	if (movement_cache.length == 3) {
+
+
+		movement_cache[2] = tmp;
+
+
 	}
+
+	// else if(movement_cache.length == 2) {
+	// 	movement_cache = [];
+	// }
+	//Maybe add back in, who knows
+
+
 	//add to cache
 	else { 
-		movement_cache[movement_cache_size] = tmp;
-		++movement_cache_size;
+		console.log("pushing");
+		console.log(tmp);
+
+		movement_cache.push(tmp);
+
+
+		console.log("after: ");
+		console.log(movement_cache);
+		console.log(movement_cache.length);
 	}
+
 }
