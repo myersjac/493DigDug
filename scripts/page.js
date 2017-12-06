@@ -259,7 +259,7 @@ function check_if_killed(x_enemy, y_enemy) {
 }
 
 //changes direction in which the smurf is pointing
-function change_direction(dir) {
+function changeDirection(dir) {
 
 	//direction of smurf is left
 	if(dir == 0) {
