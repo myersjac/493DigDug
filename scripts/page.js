@@ -96,16 +96,20 @@ function keydownRouter(e) {
     break;
     case KEYS.left:
 		add_to_movement_cache(smurf.coordinates.x_coord - 1, smurf.coordinates.y_coord);
+		changeDirection(0);
 		break;
     case KEYS.right:
 		add_to_movement_cache(smurf.coordinates.x_coord + 1, smurf.coordinates.y_coord);
+		changeDirection(1);
 		break;
     case KEYS.up:
 		add_to_movement_cache(smurf.coordinates.x_coord, smurf.coordinates.y_coord - 1);
+		changeDirection(2);
 		break;
     case KEYS.down:
 		add_to_movement_cache(smurf.coordinates.x_coord, smurf.coordinates.y_coord + 1);
-      	break;
+		changeDirection(3);
+      		break;
     default:
       console.log("Invalid input!");
   }
@@ -252,8 +256,28 @@ function check_if_killed(x_enemy, y_enemy) {
 	//	alert('killed');
 		console.log('killed');
 	}
-	
 }
+
+//changes direction in which the smurf is pointing
+function change_direction(dir) {
+
+	//direction of smurf is left
+	if(dir == 0) {
+	 	$("#smurf").attr('src', 'img/character_walk_left.png');
+	}
+	//direction of smurf is right
+	if(dir == 1) {
+	 	$("#smurf").attr('src', 'img/character_walk.png');
+	}
+	//direction of smurf is upwards
+	if(dir == 2) {
+	 	$("#smurf").attr('src', 'img/character_walk_up.png');
+	 }
+	 //direction of smurf is downwards
+	 if(dir == 3) {
+	 	$("#smurf").attr('src', 'img/character_walk_down.png');
+	 }
+};
 
 //moves any character to a new space and removes wall
 function move() {
