@@ -420,9 +420,9 @@ function add_to_movement_cache(x, y) {
 	//check if valid movement!
 
 	//-2 for rocks
-	if(x<0 || y<0 || x >= MAX_BOARD_WIDTH || y >= MAX_BOARD_HEIGHT - 1){
-		tmp.x_coord = 0;
-		tmp.y_coord = 0;
+	if(x<1 || y<1 || x >= MAX_BOARD_WIDTH || y >= MAX_BOARD_HEIGHT - 1){
+		tmp.x_coord = 1;
+		tmp.y_coord = 1;
 		 //don't want negative values AKA him going off screen
 		 return;
 	}
