@@ -27,7 +27,7 @@ LinkedList.prototype.delete_first_elt = function() {
 
 //Game window is composed of 10 by 14
 var space_has_tunnel; // = new Array[11][14];this is 10 ground rows and the 0th row is the top of the ground
-
+var bullets_shot = [];
 //standards
 var STANDARD_SIZE = 30;
 var MAX_BOARD_WIDTH = 16;
@@ -36,6 +36,13 @@ var pooka1_steps;
 var pooka2_steps;
 var dragon1_steps;
 var dragon2_steps;
+
+class bullet {
+	constructor(coord_pair, direction) {
+		this.coord_pair = new coordinate_pair(coord_pair.x_coord, coord_pair.y_coord);
+		this.direction = direction;
+	}
+};
 //can only be between 0 to 10 for x and 0 to 13 for y
 class coordinate_pair { 
 	
@@ -48,6 +55,7 @@ class coordinate_pair {
 class smurf {
 	 constructor(){
 	 	this.coordinates = new coordinate_pair();
+	 	this.direction_right = 1;
 	 };
 };
 
@@ -83,6 +91,8 @@ function keydownRouter(e) {
       break;
     case KEYS.spacebar:
     // If you would like to add arrow button features
+    	addBullet();
+    	break;
     break;
     case KEYS.left:
 		add_to_movement_cache(smurf.coordinates.x_coord - 1, smurf.coordinates.y_coord);
@@ -227,7 +237,12 @@ $(document).ready( function() {
 		setInterval( function() {
 		// actuate_movement_cache();
 		// move();
-	}, 500);	
+	}, 500);
+
+	$(window).keydown(keydownRouter);
+		setInterval(function() {
+			moveBullet();
+	}, 300);	
 });
 
 function check_if_killed(x_enemy, y_enemy) {
@@ -488,4 +503,16 @@ function add_to_movement_cache(x, y) {
 		console.log(movement_cache.length);
 	}
 
+}
+
+function addBullet() {
+	let bullet = new bullet(new coordinate_pair(smurf.coordinates.x_coord, smurf.coordinates.y_coord), smurf.direction_right);
+	bullets_shot.push(bullet);
+	$("#game-screen").append('<img id="bullet-"' + bullets_shot.length + '" src="img/bullet.png">');
+}
+
+function moveBullet() {
+	for(let i = 0; i < bullets_shot.length; i++) {
+		
+	}
 }
