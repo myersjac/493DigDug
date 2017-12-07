@@ -523,10 +523,18 @@ function add_to_movement_cache(x, y) {
 function addBullet() {
 	//no bullet shot yet
 	if (null == bullet_ptr) { 
-		let bulletTMP = new bullet(new coordinate_pair(smurf.coordinates.x_coord, smurf.coordinates.y_coord), smurf.direction);
-		bullet_ptr = bulletTMP;
-		$("#game-screen").append('<img id="bullet" class="bulletClass" style="top:' + smurf.coordinates.y_coord*STANDARD_SIZE + ';left:' +
-		smurf.coordinates.x_coord*STANDARD_SIZE + ';" src="img/bullet.png">');
+		if(smurf.direction == LEFT || smurf.direction == RIGHT) {
+			let bulletTMP = new bullet(new coordinate_pair(smurf.coordinates.x_coord, smurf.coordinates.y_coord), smurf.direction);
+			bullet_ptr = bulletTMP;
+			$("#game-screen").append('<img id="bullet" class="bulletClass" style="top:' + smurf.coordinates.y_coord*STANDARD_SIZE + ';left:' +
+			smurf.coordinates.x_coord*STANDARD_SIZE + ';" src="img/bullet.png">');
+		}
+		if(smurf.direction == UP || smurf.direction == DOWN) {
+			let bulletTMP = new bullet(new coordinate_pair(smurf.coordinates.x_coord, smurf.coordinates.y_coord), smurf.direction);
+			bullet_ptr = bulletTMP;
+			$("#game-screen").append('<img id="bullet" class="bulletClass" style="top:' + smurf.coordinates.y_coord*STANDARD_SIZE + ';left:' +
+			smurf.coordinates.x_coord*STANDARD_SIZE + ';" src="img/vertical_bullet.png">');
+		}
 	}
 }
 
