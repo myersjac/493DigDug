@@ -480,7 +480,7 @@ function add_to_movement_cache(x, y) {
 	//check if valid movement!
 
 
-	if(x <= 0){
+	if(x < 0){
 		tmp.x_coord = 0;
 	}
 
@@ -492,8 +492,8 @@ function add_to_movement_cache(x, y) {
 		tmp.x_coord = MAX_BOARD_WIDTH - 1;
 	}
 
-	else if (y >= MAX_BOARD_HEIGHT){
-		tmp.y_coord = MAX_BOARD_HEIGHT - 1;
+	else if (y >= MAX_BOARD_HEIGHT - 1){
+		tmp.y_coord = MAX_BOARD_HEIGHT - 2;
 	}
 
 	console.log("before: ");
@@ -525,8 +525,17 @@ function addBullet() {
 	if (null == bullet_ptr) { 
 		let bulletTMP = new bullet(new coordinate_pair(smurf.coordinates.x_coord, smurf.coordinates.y_coord), smurf.direction);
 		bullet_ptr = bulletTMP;
-		$("#game-screen").append('<img id="bullet" class="bulletClass" style="top:' + smurf.coordinates.y_coord*STANDARD_SIZE + ';left:' +
-		smurf.coordinates.x_coord*STANDARD_SIZE + ';" src="img/bullet.png">');
+			$('#bullet').attr('src', 'img/vertical_bullet.png');
+
+		if((LEFT == smurf.direction) || (RIGHT == smurf.direction))	{
+
+			$("#game-screen").append('<img id="bullet" class="bulletClass" style="top:' + smurf.coordinates.y_coord*STANDARD_SIZE + ';left:' +
+			smurf.coordinates.x_coord*STANDARD_SIZE + ';" src="img/bullet.png">');
+		}
+		else{
+			$("#game-screen").append('<img id="bullet" class="bulletClass" style="top:' + smurf.coordinates.y_coord*STANDARD_SIZE + ';left:' +
+			smurf.coordinates.x_coord*STANDARD_SIZE + ';" src="img/vertical_bullet.png">');
+		}
 	}
 }
 
@@ -537,7 +546,7 @@ function moveBullet() {
 		let top_coords = parseInt($('#bullet').css('top'));
 		if (bullet_ptr.direction == LEFT) { 
 			//remove element
-			if (left_coords - STANDARD_SIZE < 0) { 
+			if (left_coords - STANDARD_SIZE < 0 || !space_has_tunnel[(left_coords - STANDARD_SIZE)/STANDARD_SIZE][top_coords / STANDARD_SIZE]) { 
 				$('#bullet').remove();
 				bullet_ptr = null;
 			}
@@ -548,7 +557,7 @@ function moveBullet() {
 		}
 		else if (bullet_ptr.direction == RIGHT) { 
 		//remove element
-			if (left_coords + STANDARD_SIZE > (MAX_BOARD_WIDTH-1)*STANDARD_SIZE) { 
+			if ( (left_coords + STANDARD_SIZE > (MAX_BOARD_WIDTH-1)*STANDARD_SIZE)  || (!space_has_tunnel[(left_coords + STANDARD_SIZE)/STANDARD_SIZE][top_coords / STANDARD_SIZE]) ) { 
 				$('#bullet').remove();
 				bullet_ptr = null;
 			}
@@ -559,7 +568,7 @@ function moveBullet() {
 		}
 		else if (bullet_ptr.direction == UP) { 
 		//remove element
-			if (top_coords - STANDARD_SIZE < 0) { 
+			if (top_coords - STANDARD_SIZE < 0 || (!space_has_tunnel[(left_coords)/STANDARD_SIZE][(top_coords - STANDARD_SIZE) / STANDARD_SIZE])) { 
 				$('#bullet').remove();
 				bullet_ptr = null;
 			}
@@ -568,9 +577,9 @@ function moveBullet() {
 				$('#bullet').css('top', top_coords - STANDARD_SIZE);
 			}
 		}
-		else { 
+		else { //DOWN
 		//remove element
-			if (top_coords + STANDARD_SIZE > (MAX_BOARD_HEIGHT-1)*STANDARD_SIZE) { 
+			if (top_coords + STANDARD_SIZE > (MAX_BOARD_HEIGHT-1)*STANDARD_SIZE || (!space_has_tunnel[left_coords/STANDARD_SIZE][(top_coords + STANDARD_SIZE) / STANDARD_SIZE]) ) { 
 				$('#bullet').remove();
 				bullet_ptr = null;
 			}
@@ -590,28 +599,35 @@ function checkIfKilledEnemies() {
 	//bullet collides with enemy
 	if ($("#pooka1").css("left") == bullet_coord_x 
 					&& $("#pooka1").css("top") == bullet_coord_y) { 
-		$("#pooka1").remove();
+		$("#pooka1").attr('src', 'img/explosion.png');
+		setTimeout(function(){ $("#pooka1").remove(); }, 150);
+
 		$('#bullet').remove();
 	    bullet_ptr = null;
 	}
 		//bullet collides with enemy
 	if ($("#pooka2").css("left") == bullet_coord_x 
 					&& $("#pooka2").css("top") == bullet_coord_y) { 
-		$("#pooka2").remove();
+
+		$("#pooka2").attr('src', 'img/explosion.png');
+		setTimeout(function(){ $("#pooka2").remove(); }, 150);
+
 		$('#bullet').remove();
 		bullet_ptr = null;
 	}
 		//bullet collides with enemy
 	if ($("#dragon1").css("left") == bullet_coord_x 
 					&& $("#dragon1").css("top") == bullet_coord_y) { 
-		$("#dragon1").remove();	
+		$("#dragon1").attr('src', 'img/explosion.png');
+		setTimeout(function(){ $("#dragon1").remove(); }, 150);
 		$('#bullet').remove();
 				bullet_ptr = null;
 	}
 		//bullet collides with enemy
 	if ($("#dragon2").css("left") == bullet_coord_x 
 					&& $("#dragon2").css("top") == bullet_coord_y) { 
-		$("#dragon2").remove();	
+		$("#dragon2").attr('src', 'img/explosion.png');
+		setTimeout(function(){ $("#dragon2").remove(); }, 150);
 		$('#bullet').remove();
 				bullet_ptr = null;
 	}
