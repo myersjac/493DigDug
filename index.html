@@ -13,7 +13,7 @@
 <body>
 	<div class='outer-container'>
 		<div class='game-window' id='game-window'>
-			<div class='main-screen'>
+			<div id='main-screen'>
 <!-- 
 				<h1 style="color:white" align="center">Dig Dug</h1>
 				<h2 style="color:white" align="center">Created by: Anjana Rajagopal, Benjamin Erichsen, and Jacob Myers</h2>
@@ -23,13 +23,19 @@
 				<input type="button" id="options-button" value="Options">
 				<img src="img/Dig_Dug.png" id="img-digdug-mainscreen">
 			 -->
-			 
+			 </div>
 			 
 			 <div id="game-screen">
 			
 
 			 </div>
 
+			
+			
+			<div id="game-over" style="display:none">
+			 	<h1 style="color:white" align="center">Game Over</h1>
+      				<h2 style="color:white" align="center" id="final-score">Your score: </h2>
+      				<input type="button" id="back-btn" align="center" value = "Go Back">
 			</div>
 		</div>
 	</div>
