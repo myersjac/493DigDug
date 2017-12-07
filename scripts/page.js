@@ -40,6 +40,8 @@ var LEFT = 0;
 var RIGHT = 1;
 var UP = 2;
 var DOWN = 3;
+var num_lives = 3;
+var num_points = 0;
 class bullet {
 	constructor(coord_pair, direction) {
 		this.coord_pair = new coordinate_pair(coord_pair.x_coord, coord_pair.y_coord);
@@ -250,7 +252,13 @@ $(document).ready( function() {
 	$(window).keydown(keydownRouter);
 		setInterval(function() {
 			moveBullet();
-	}, 300);	
+	}, 300);
+	
+	$("#back-btn").click(function() {
+		$("#game-over").show().hide();
+		$("#game-screen").show().hide();
+		$("#main-screen").hide().show();
+	});	
 });
 
 function check_if_killed(x_enemy, y_enemy) {
@@ -321,6 +329,21 @@ function move() {
 	// console.log("Dragon 2 x: " + (coords.value.x_coord * STANDARD_SIZE));
 	// console.log("Dragon 2 y: " + (coords.value.y_coord * STANDARD_SIZE));
 
+}
+
+//Get total number of lives for smurf
+function getNumLives() {
+	return num_lives;
+}
+
+//Get total number of points earned
+function getTotalPoints() {
+	return num_points;
+}
+
+//Add points for each points the player earns through making a tunnel or attacking an enemy
+function addPoints(points) {
+	num_points += points;
 }
 
 //check where smurf is and always moves closer
@@ -523,6 +546,7 @@ function add_to_movement_cache(x, y) {
 function addBullet() {
 	//no bullet shot yet
 	if (null == bullet_ptr) { 
+
 		let bulletTMP = new bullet(new coordinate_pair(smurf.coordinates.x_coord, smurf.coordinates.y_coord), smurf.direction);
 		bullet_ptr = bulletTMP;
 			$('#bullet').attr('src', 'img/vertical_bullet.png');
@@ -533,6 +557,8 @@ function addBullet() {
 			smurf.coordinates.x_coord*STANDARD_SIZE + ';" src="img/bullet.png">');
 		}
 		else{
+
+
 			$("#game-screen").append('<img id="bullet" class="bulletClass" style="top:' + smurf.coordinates.y_coord*STANDARD_SIZE + ';left:' +
 			smurf.coordinates.x_coord*STANDARD_SIZE + ';" src="img/vertical_bullet.png">');
 		}
