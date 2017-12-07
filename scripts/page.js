@@ -252,7 +252,13 @@ $(document).ready( function() {
 	$(window).keydown(keydownRouter);
 		setInterval(function() {
 			moveBullet();
-	}, 300);	
+	}, 300);
+	
+	$("#back-btn").click(function() {
+		$("#game-over").show().hide();
+		$("#game-screen").show().hide();
+		$("#main-screen").hide().show();
+	});	
 });
 
 function check_if_killed(x_enemy, y_enemy) {
