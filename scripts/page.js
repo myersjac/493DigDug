@@ -40,6 +40,8 @@ var LEFT = 0;
 var RIGHT = 1;
 var UP = 2;
 var DOWN = 3;
+var num_lives = 3;
+var num_points = 0;
 class bullet {
 	constructor(coord_pair, direction) {
 		this.coord_pair = new coordinate_pair(coord_pair.x_coord, coord_pair.y_coord);
@@ -321,6 +323,21 @@ function move() {
 	// console.log("Dragon 2 x: " + (coords.value.x_coord * STANDARD_SIZE));
 	// console.log("Dragon 2 y: " + (coords.value.y_coord * STANDARD_SIZE));
 
+}
+
+//Get total number of lives for smurf
+function getNumLives() {
+	return num_lives;
+}
+
+//Get total number of points earned
+function getTotalPoints() {
+	return num_points;
+}
+
+//Add points for each points the player earns through making a tunnel or attacking an enemy
+function addPoints(points) {
+	num_points += points;
 }
 
 //check where smurf is and always moves closer
