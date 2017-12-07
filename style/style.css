@@ -63,6 +63,11 @@ body{
   z-index: 7;
 }
 
+.bulletClass { 
+  position: absolute;
+  z-index: 6;
+}
+
 #game-screen{
 
 
