@@ -2,11 +2,17 @@
 body{
   background: white;
 }
+.super-container{
+    height: 570px;
+    width: 480px;
+}
+
 .outer-container {
   height: 570px;
-  width: 480px;
+  width: 625px;
   background: #eee;
   border: 5px solid #ccc;
+  display: inline-block;
 }
 .main-screen {
   height: 100%;
@@ -20,6 +26,12 @@ body{
   background: black;
   float: left;
 }
+
+.score-window{
+  text-align: center;
+  color: red;
+}
+
 #img-digdug-mainscreen {
     display: block;
     margin: 20 auto;
@@ -63,7 +75,13 @@ body{
   z-index: 7;
 }
 
+.bulletClass { 
+  position: absolute;
+  z-index: 6;
+}
+
 #game-screen{
+
 
 
 /*  margin-top: 30px;
