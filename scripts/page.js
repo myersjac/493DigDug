@@ -1,6 +1,7 @@
 //LinkedList implementation copied from thatjsdude.com
 function LinkedList() {
 	this.head = null;
+	this.tailminusTwo = null;
 }
 LinkedList.prototype.push = function(val) {
 	var node = {
@@ -13,6 +14,7 @@ LinkedList.prototype.push = function(val) {
 	else {
 		current = this.head;
 		while(current.next) {
+			this.tailminusTwo = current;
 			current = current.next;
 		}
 		current.next = node;
@@ -23,14 +25,32 @@ LinkedList.prototype.delete_first_elt = function() {
 		this.head = this.head.next;
 	}
 }
-//Globals
+LinkedList.prototype.length = function(){
+	if(!this.head){
+		return 0;
+	}
 
+	let counter1 = 1;
+	let current1 = this.head;
+
+	while(current1.next != null) {
+			current1 = current1.next;
+			counter1++;
+	}
+
+	return counter1;
+
+}
+
+//Globals
 //Game window is composed of 10 by 14
 var space_has_tunnel; // = new Array[11][14];this is 10 ground rows and the 0th row is the top of the ground
 //standards
 var STANDARD_SIZE = 30;
 var MAX_BOARD_WIDTH = 16;
 var MAX_BOARD_HEIGHT = 18;
+
+
 var pooka1_steps;
 var pooka2_steps;
 var dragon1_steps;
@@ -42,6 +62,48 @@ var UP = 2;
 var DOWN = 3;
 var num_lives = 3;
 var num_points = 0;
+var firstLife = true;
+
+
+function modifyEnemyMovement(keyDirection){
+	//pooka1's length represent all
+		console.log("MODIFY STUFF");
+		console.log(dragon1_steps.length());
+		console.log(keyDirection);
+	if (dragon1_steps.length() > 3) {
+		if(keyDirection == KEYS.left && smurf.direction == RIGHT){
+			console.log("LEFT RIGHT THING HAPPENED");
+			pooka1_steps.tailminusTwo = null;
+			pooka2_steps.tailminusTwo = null;
+			dragon1_steps.tailminusTwo = null;
+			dragon2_steps.tailminusTwo = null;
+		}
+
+		else if(keyDirection == KEYS.right && smurf.direction == LEFT){
+			pooka1_steps.tailminusTwo = null;
+			pooka2_steps.tailminusTwo = null;
+			dragon1_steps.tailminusTwo = null;
+			dragon2_steps.tailminusTwo = null;
+		}
+
+		else if(keyDirection == KEYS.up && smurf.direction == DOWN){
+			pooka1_steps.tailminusTwo = null;
+			pooka2_steps.tailminusTwo = null;
+			dragon1_steps.tailminusTwo = null;
+			dragon2_steps.tailminusTwo = null;
+		}
+
+		else if(keyDirection == KEYS.down && smurf.direction == UP){
+			pooka1_steps.tailminusTwo = null;
+			pooka2_steps.tailminusTwo = null;
+			dragon1_steps.tailminusTwo = null;
+			dragon2_steps.tailminusTwo = null;
+		}
+
+	}
+
+}
+
 class bullet {
 	constructor(coord_pair, direction) {
 		this.coord_pair = new coordinate_pair(coord_pair.x_coord, coord_pair.y_coord);
@@ -57,7 +119,7 @@ class coordinate_pair {
 	};
 };
 
-class smurf {
+class Smurf {
 	 constructor(){
 	 	this.coordinates = new coordinate_pair();
 	 	this.direction = RIGHT;
@@ -83,9 +145,6 @@ var KEYS = {
 //this records all the keystrokes of a user
 var movement_cache = new Array();
 var n = 3;
-// for (let i = 0; i < n; i++){
-//     movement_cache.push(new coordinate_pair());
-// }
 
 
 
@@ -101,18 +160,22 @@ function keydownRouter(e) {
     break;
     case KEYS.left:
 		add_to_movement_cache(smurf.coordinates.x_coord - 1, smurf.coordinates.y_coord);
+		modifyEnemyMovement(KEYS.left);
 		changeDirection(LEFT);
 		break;
     case KEYS.right:
 		add_to_movement_cache(smurf.coordinates.x_coord + 1, smurf.coordinates.y_coord);
+		modifyEnemyMovement(KEYS.right);
 		changeDirection(RIGHT);
 		break;
     case KEYS.up:
 		add_to_movement_cache(smurf.coordinates.x_coord, smurf.coordinates.y_coord - 1);
+		modifyEnemyMovement(KEYS.up);
 		changeDirection(UP);
 		break;
     case KEYS.down:
 		add_to_movement_cache(smurf.coordinates.x_coord, smurf.coordinates.y_coord + 1);
+		modifyEnemyMovement(KEYS.down);
 		changeDirection(DOWN);
       		break;
     default:
@@ -120,25 +183,33 @@ function keydownRouter(e) {
   }
 }
 	
-
-
 //main
-$(document).ready( function() { 
+$(document).ready(function(){
+	initializeGame();
+	firstLife = false;
 
-	smurf = new smurf();
-	smurf.coordinates.x_coord = 7;
-	smurf.coordinates.y_coord = 1;
-	$('#smurf').css("top", smurf.coordinates.y_coord*STANDARD_SIZE);
-	$('#smurf').css("left", smurf.coordinates.x_coord*STANDARD_SIZE);
-	pooka1_steps = new LinkedList();
-	pooka2_steps = new LinkedList();
-	dragon1_steps = new LinkedList();
-	dragon2_steps = new LinkedList();
+}); 
 
-	//initialize bullet ptr as null
-	bullet_ptr = null;
 
-	//intialize tunnel array
+
+function initializeGame(){ 
+
+
+smurf = new Smurf();
+smurf.coordinates.x_coord = 7;
+smurf.coordinates.y_coord = 1;
+$('#smurf').css("top", smurf.coordinates.y_coord*STANDARD_SIZE);
+$('#smurf').css("left", smurf.coordinates.x_coord*STANDARD_SIZE);
+pooka1_steps = new LinkedList();
+pooka2_steps = new LinkedList();
+dragon1_steps = new LinkedList();
+dragon2_steps = new LinkedList();
+
+//initialize bullet ptr as null
+bullet_ptr = null;
+
+//intialize tunnel array
+if(firstLife){
 	space_has_tunnel = new Array(MAX_BOARD_HEIGHT);
 	for (var row1 = 0; row1 < MAX_BOARD_WIDTH; row1++) { 
 		space_has_tunnel[row1] = new Array(MAX_BOARD_WIDTH);
@@ -152,17 +223,10 @@ $(document).ready( function() {
 			}
 		}
 	}
-	
 
-	//game begins
-	// $("#start-button").click({
-		
-	// });
-    
+	var block = ""
 
-    var block = ""
-
-    for ( var row = 1; row < MAX_BOARD_HEIGHT; row++) {
+	for ( var row = 1; row < MAX_BOARD_HEIGHT; row++) {
 		for( var col = 0 ; col < MAX_BOARD_WIDTH ; col++ ){
 		
 			block = "<img class='blocks' style='left:" + col*30 + ";top:" + ((row*STANDARD_SIZE + 30)) + "' src='";
@@ -201,43 +265,48 @@ $(document).ready( function() {
 	} //row
 
 	initialize_tunnels();
-	initializeEnemies();
 	initializeRocks();
+}
 
-	//Pooka 1 initializing linked list
-	for(let j = 12; j > 4; j--) {
-		let tmp = new coordinate_pair(5, j);
-		pooka1_steps.push(tmp);
-	}
-	pooka1_steps.push(new coordinate_pair(6, 5));
-	pooka1_steps.push(new coordinate_pair(7, 5));
 
-	//Pooka 2 initializing linked list
-	for(let j = 12; j > 4; j--) {
-		let tmp = new coordinate_pair(13, j);
-		pooka2_steps.push(tmp);
-	}
-	for(let j = 12; j >= 7; j--) {
-		let tmp = new coordinate_pair(j,5);
-		pooka2_steps.push(tmp);
-	}
 
-	//Dragon 1 initializing linked list
-	dragon1_steps.push(new coordinate_pair(6, 5));
-	dragon1_steps.push(new coordinate_pair(7, 5));
+initializeEnemies();
 
-	//Dragon 2 initializing linked list
-	for(let j = 12; j >= 7; j--) {
-		let tmp = new coordinate_pair(j,5);
-		dragon2_steps.push(tmp);
-	}
+//Pooka 1 initializing linked list
+for(let j = 12; j > 4; j--) {
+	let tmp = new coordinate_pair(5, j);
+	pooka1_steps.push(tmp);
+}
+pooka1_steps.push(new coordinate_pair(6, 5));
+pooka1_steps.push(new coordinate_pair(7, 5));
 
-	for(let j = 4; j > 0; j--) {
-		pooka1_steps.push(new coordinate_pair(7, j));
-		pooka2_steps.push(new coordinate_pair(7, j));
-		dragon1_steps.push(new coordinate_pair(7, j));
-		dragon2_steps.push(new coordinate_pair(7, j));
-	}
+//Pooka 2 initializing linked list
+for(let j = 12; j > 4; j--) {
+	let tmp = new coordinate_pair(13, j);
+	pooka2_steps.push(tmp);
+}
+for(let j = 12; j >= 7; j--) {
+	let tmp = new coordinate_pair(j,5);
+	pooka2_steps.push(tmp);
+}
+
+//Dragon 1 initializing linked list
+dragon1_steps.push(new coordinate_pair(6, 5));
+dragon1_steps.push(new coordinate_pair(7, 5));
+
+//Dragon 2 initializing linked list
+for(let j = 12; j >= 7; j--) {
+	let tmp = new coordinate_pair(j,5);
+	dragon2_steps.push(tmp);
+}
+
+for(let j = 4; j > 0; j--) {
+	pooka1_steps.push(new coordinate_pair(7, j));
+	pooka2_steps.push(new coordinate_pair(7, j));
+	dragon1_steps.push(new coordinate_pair(7, j));
+	dragon2_steps.push(new coordinate_pair(7, j));
+}
+if(firstLife){
 	$(window).keydown(keydownRouter);
 		setInterval( function() {
 		actuate_movement_cache();
@@ -253,22 +322,44 @@ $(document).ready( function() {
 		setInterval(function() {
 			moveBullet();
 	}, 300);
-	
-	$("#back-btn").click(function() {
-		$("#game-over").show().hide();
-		$("#game-screen").show().hide();
-		$("#main-screen").hide().show();
-	});	
-});
+
+	$(window).keydown(keydownRouter);
+		setInterval(function() {
+		checkIfKilledEnemies();
+		check_if_killed( (parseInt($("#pooka1").css('left')) / STANDARD_SIZE) , 
+							(parseInt($("#pooka1").css('top')) / STANDARD_SIZE) );
+		check_if_killed( (parseInt($("#pooka2").css('left')) / STANDARD_SIZE) , 
+							(parseInt($("#pooka2").css('top')) / STANDARD_SIZE) );
+		
+		check_if_killed( (parseInt($("#dragon1").css('left')) / STANDARD_SIZE) , 
+							(parseInt($("#dragon1").css('top')) / STANDARD_SIZE) );
+		check_if_killed( (parseInt($("#dragon2").css('left')) / STANDARD_SIZE) , 
+							(parseInt($("#dragon2").css('top')) / STANDARD_SIZE) );
+
+
+
+	}, 1);
+}	
+
+}
 
 function check_if_killed(x_enemy, y_enemy) {
 	let x = smurf.coordinates.x_coord;
 	let y = smurf.coordinates.y_coord;
 	if (0 == (x - x_enemy) && 0 == (y-y_enemy)) { 
-	//	alert('killed');
 		console.log('killed');
+		console.log($("#dragon1"))
+		console.log($("#dragon1") === "r.fn.init" );
+
+		$('#pooka1').remove();
+		$('#pooka2').remove();
+		$('#dragon1').remove();
+		$('#dragon2').remove();
+		initializeGame();
+
 	}
 }
+
 
 //changes direction in which the smurf is pointing
 function changeDirection(dir) {
@@ -292,43 +383,79 @@ function changeDirection(dir) {
 	 smurf.direction = dir; //sets the smurf's new direction
 };
 
+function enemyThere(x_next, y_next, enemy_looking) { 
+	
+
+	if (enemy_looking != "pooka1" && (parseInt($('#pooka1').css('left')) == x_next) 
+							&& (parseInt($('#pooka1').css('top')) == y_next))  { 
+		console.log("true pooka1");
+		return true;
+	}
+	if (enemy_looking != "pooka2" && (parseInt($('#pooka2').css('left')) == x_next) 
+							&& (parseInt($('#pooka2').css('top')) == y_next))  { 
+		console.log("true pooka2");
+		return true;
+	}
+	if (enemy_looking != "dragon1" && (parseInt($('#dragon1').css('left')) == x_next) 
+							&& (parseInt($('#dragon1').css('top')) == y_next))  { 
+		console.log("true dragon1");
+		return true;
+	}
+	if (enemy_looking != "dragon2" && (parseInt($('#dragon2').css('left')) == x_next) 
+							&& (parseInt($('#dragon2').css('top')) == y_next))  { 
+		console.log("true dragon2");
+		return true;
+	}
+	return false;
+}
+
 //moves any character to a new space and removes wall
 function move() {
 
 	//updates coordinates of pooka 1 
 	let coords = pooka1_steps.head;
-	$("#pooka1").css("left", (coords.value.x_coord * STANDARD_SIZE));
-	$("#pooka1").css("top", (coords.value.y_coord * STANDARD_SIZE));
-	pooka1_steps.delete_first_elt();
-	// console.log("Pooka 1 x: " + (coords.value.x_coord * STANDARD_SIZE));
-	// console.log("Pooka 1 y: " + (coords.value.y_coord * STANDARD_SIZE));
-	check_if_killed(coords.value.x_coord, coords.value.y_coord);
+	//don't move if enemy there
+	if (!enemyThere(coords.value.x_coord*STANDARD_SIZE, coords.value.y_coord*STANDARD_SIZE, "pooka1")) {
+		$( "#pooka1" ).animate({
+	    	top: coords.value.y_coord * STANDARD_SIZE,
+	    	left: coords.value.x_coord * STANDARD_SIZE
+	  	}, 500);
+	  	pooka1_steps.delete_first_elt();
+	  	check_if_killed(coords.value.x_coord, coords.value.y_coord);
+	  }
 
-	coords = pooka2_steps.head;
-	$("#pooka2").css("left", (coords.value.x_coord * STANDARD_SIZE));
-	$("#pooka2").css("top", (coords.value.y_coord * STANDARD_SIZE));
-	pooka2_steps.delete_first_elt();
-	// console.log("Pooka 2 x: " + (coords.value.x_coord * STANDARD_SIZE));
-	// console.log("Pooka 2 y: " + (coords.value.y_coord * STANDARD_SIZE));
-	check_if_killed(coords.value.x_coord, coords.value.y_coord);
+  	coords = pooka2_steps.head;
+
+  if (!enemyThere(coords.value.x_coord*STANDARD_SIZE, coords.value.y_coord*STANDARD_SIZE, "pooka2") ) {
+
+	  	$( "#pooka2" ).animate({
+	    	top: coords.value.y_coord * STANDARD_SIZE,
+	    	left: coords.value.x_coord * STANDARD_SIZE
+	  	}, 500);
+	  	pooka2_steps.delete_first_elt();
+		check_if_killed(coords.value.x_coord, coords.value.y_coord);
+	}
 
 	coords = dragon1_steps.head;
-	$("#dragon1").css("left", (coords.value.x_coord * STANDARD_SIZE));
-	$("#dragon1").css("top", (coords.value.y_coord * STANDARD_SIZE));
-	dragon1_steps.delete_first_elt();
-	// console.log("Dragon 1 x: " + (coords.value.x_coord * STANDARD_SIZE));
-	// console.log("Dragon 1 y: " + (coords.value.y_coord * STANDARD_SIZE));
-	check_if_killed(coords.value.x_coord, coords.value.y_coord);
+	if (!enemyThere(coords.value.x_coord*STANDARD_SIZE, coords.value.y_coord*STANDARD_SIZE, "dragon1")) {
 
+	  	$( "#dragon1" ).animate({
+	    	top: coords.value.y_coord * STANDARD_SIZE,
+	    	left: coords.value.x_coord * STANDARD_SIZE
+	  	}, 500);
+		dragon1_steps.delete_first_elt();
+		check_if_killed(coords.value.x_coord, coords.value.y_coord);
+	}
 	coords = dragon2_steps.head;
-	$("#dragon2").css("left", (coords.value.x_coord * STANDARD_SIZE));
-	$("#dragon2").css("top", (coords.value.y_coord * STANDARD_SIZE));
-	dragon2_steps.delete_first_elt();
-	check_if_killed(coords.value.x_coord, coords.value.y_coord);
+	if (!enemyThere( coords.value.x_coord*STANDARD_SIZE, coords.value.y_coord*STANDARD_SIZE, "dragon2")) {
 
-	// console.log("Dragon 2 x: " + (coords.value.x_coord * STANDARD_SIZE));
-	// console.log("Dragon 2 y: " + (coords.value.y_coord * STANDARD_SIZE));
-
+	  	$( "#dragon2" ).animate({
+	    	top: coords.value.y_coord * STANDARD_SIZE,
+	    	left: coords.value.x_coord * STANDARD_SIZE
+	  	}, 500);
+	  	dragon2_steps.delete_first_elt();
+		check_if_killed(coords.value.x_coord, coords.value.y_coord);
+	}
 }
 
 //Get total number of lives for smurf
@@ -619,12 +746,13 @@ function moveBullet() {
 }
 
 function checkIfKilledEnemies() { 
-	let bullet_coord_x = $('#bullet').css('left');
-	let bullet_coord_y = $('#bullet').css('top');
+	let bullet_coord_x = parseInt($('#bullet').css('left') );
+	let bullet_coord_y = parseInt($('#bullet').css('top') );
 	
 	//bullet collides with enemy
-	if ($("#pooka1").css("left") == bullet_coord_x 
-					&& $("#pooka1").css("top") == bullet_coord_y) { 
+	if ( (Math.abs(parseInt($("#pooka1").css("left")) - bullet_coord_x) < 20)
+					&& Math.abs(parseInt($("#pooka1").css("top")) - bullet_coord_y) < 20) { 
+		
 		$("#pooka1").attr('src', 'img/explosion.png');
 		setTimeout(function(){ $("#pooka1").remove(); }, 150);
 
@@ -632,8 +760,8 @@ function checkIfKilledEnemies() {
 	    bullet_ptr = null;
 	}
 		//bullet collides with enemy
-	if ($("#pooka2").css("left") == bullet_coord_x 
-					&& $("#pooka2").css("top") == bullet_coord_y) { 
+	else if ( (Math.abs(parseInt($("#pooka2").css("left")) - bullet_coord_x) < 20)
+					&& Math.abs(parseInt($("#pooka2").css("top")) - bullet_coord_y) < 20) { 
 
 		$("#pooka2").attr('src', 'img/explosion.png');
 		setTimeout(function(){ $("#pooka2").remove(); }, 150);
@@ -642,16 +770,22 @@ function checkIfKilledEnemies() {
 		bullet_ptr = null;
 	}
 		//bullet collides with enemy
-	if ($("#dragon1").css("left") == bullet_coord_x 
-					&& $("#dragon1").css("top") == bullet_coord_y) { 
+	else if ( (Math.abs(parseInt($("#dragon1").css("left")) - bullet_coord_x) < 20)
+					&& Math.abs(parseInt($("#dragon1").css("top")) - bullet_coord_y) < 20) { 
 		$("#dragon1").attr('src', 'img/explosion.png');
-		setTimeout(function(){ $("#dragon1").remove(); }, 150);
+		setTimeout(function(){ 
+
+			$("#dragon1").css('visibility', 'hidden');
+			$("#dragon1").remove();
+
+
+		 }, 150);
 		$('#bullet').remove();
 				bullet_ptr = null;
 	}
 		//bullet collides with enemy
-	if ($("#dragon2").css("left") == bullet_coord_x 
-					&& $("#dragon2").css("top") == bullet_coord_y) { 
+	else if ( (Math.abs(parseInt($("#dragon2").css("left")) - bullet_coord_x) < 20)
+					&& Math.abs(parseInt($("#dragon2").css("top")) - bullet_coord_y) < 20) { 
 		$("#dragon2").attr('src', 'img/explosion.png');
 		setTimeout(function(){ $("#dragon2").remove(); }, 150);
 		$('#bullet').remove();
