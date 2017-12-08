@@ -1,6 +1,7 @@
 //LinkedList implementation copied from thatjsdude.com
 function LinkedList() {
 	this.head = null;
+	this.tailminusTwo = null;
 }
 LinkedList.prototype.push = function(val) {
 	var node = {
@@ -13,6 +14,7 @@ LinkedList.prototype.push = function(val) {
 	else {
 		current = this.head;
 		while(current.next) {
+			this.tailminusTwo = current;
 			current = current.next;
 		}
 		current.next = node;
@@ -23,21 +25,91 @@ LinkedList.prototype.delete_first_elt = function() {
 		this.head = this.head.next;
 	}
 }
-//Globals
+LinkedList.prototype.length = function(){
+	if(!this.head){
+		return 0;
+	}
 
+	let counter1 = 1;
+	let current1 = this.head;
+
+	while(current1.next != null) {
+			current1 = current1.next;
+			counter1++;
+	}
+
+	return counter1;
+
+}
+
+//Globals
 //Game window is composed of 10 by 14
 var space_has_tunnel; // = new Array[11][14];this is 10 ground rows and the 0th row is the top of the ground
-
 //standards
-var game_mode_on = false;
 var STANDARD_SIZE = 30;
 var MAX_BOARD_WIDTH = 16;
 var MAX_BOARD_HEIGHT = 18;
+
+
 var pooka1_steps;
 var pooka2_steps;
 var dragon1_steps;
 var dragon2_steps;
-var total_score = 0;
+var bullet_ptr;
+var LEFT = 0;
+var RIGHT = 1;
+var UP = 2;
+var DOWN = 3;
+var num_lives = 3;
+var num_points = 0;
+var firstLife = true;
+
+
+function modifyEnemyMovement(keyDirection){
+	//pooka1's length represent all
+		console.log("MODIFY STUFF");
+		console.log(dragon1_steps.length());
+		console.log(keyDirection);
+	if (dragon1_steps.length() > 3) {
+		if(keyDirection == KEYS.left && smurf.direction == RIGHT){
+			console.log("LEFT RIGHT THING HAPPENED");
+			pooka1_steps.tailminusTwo = null;
+			pooka2_steps.tailminusTwo = null;
+			dragon1_steps.tailminusTwo = null;
+			dragon2_steps.tailminusTwo = null;
+		}
+
+		else if(keyDirection == KEYS.right && smurf.direction == LEFT){
+			pooka1_steps.tailminusTwo = null;
+			pooka2_steps.tailminusTwo = null;
+			dragon1_steps.tailminusTwo = null;
+			dragon2_steps.tailminusTwo = null;
+		}
+
+		else if(keyDirection == KEYS.up && smurf.direction == DOWN){
+			pooka1_steps.tailminusTwo = null;
+			pooka2_steps.tailminusTwo = null;
+			dragon1_steps.tailminusTwo = null;
+			dragon2_steps.tailminusTwo = null;
+		}
+
+		else if(keyDirection == KEYS.down && smurf.direction == UP){
+			pooka1_steps.tailminusTwo = null;
+			pooka2_steps.tailminusTwo = null;
+			dragon1_steps.tailminusTwo = null;
+			dragon2_steps.tailminusTwo = null;
+		}
+
+	}
+
+}
+
+class bullet {
+	constructor(coord_pair, direction) {
+		this.coord_pair = new coordinate_pair(coord_pair.x_coord, coord_pair.y_coord);
+		this.direction = direction;
+	}
+};
 //can only be between 0 to 10 for x and 0 to 13 for y
 class coordinate_pair { 
 	
@@ -47,9 +119,10 @@ class coordinate_pair {
 	};
 };
 
-class smurf {
+class Smurf {
 	 constructor(){
 	 	this.coordinates = new coordinate_pair();
+	 	this.direction = RIGHT;
 	 };
 };
 
@@ -70,229 +143,369 @@ var KEYS = {
 }
 
 //this records all the keystrokes of a user
-var movement_cache_size = 0;
 var movement_cache = new Array();
-var n = 5;
-for (var i = 0; i < n; i++){
-    movement_cache.push(new coordinate_pair());
-}
+var n = 3;
 
 
 
 function keydownRouter(e) {
   switch (e.which) {
     case KEYS.shift:
-	  if (!gameover) { create(smurf_char()); }
+	  if (!gameover) { }
       break;
     case KEYS.spacebar:
     // If you would like to add arrow button features
+    	addBullet();
+    	break;
     break;
     case KEYS.left:
 		add_to_movement_cache(smurf.coordinates.x_coord - 1, smurf.coordinates.y_coord);
+		modifyEnemyMovement(KEYS.left);
+		changeDirection(LEFT);
 		break;
     case KEYS.right:
 		add_to_movement_cache(smurf.coordinates.x_coord + 1, smurf.coordinates.y_coord);
+		modifyEnemyMovement(KEYS.right);
+		changeDirection(RIGHT);
 		break;
     case KEYS.up:
 		add_to_movement_cache(smurf.coordinates.x_coord, smurf.coordinates.y_coord - 1);
+		modifyEnemyMovement(KEYS.up);
+		changeDirection(UP);
 		break;
     case KEYS.down:
 		add_to_movement_cache(smurf.coordinates.x_coord, smurf.coordinates.y_coord + 1);
-      	break;
+		modifyEnemyMovement(KEYS.down);
+		changeDirection(DOWN);
+      		break;
     default:
       console.log("Invalid input!");
   }
 }
 	
-
-
 //main
-$(document).ready( function() { 
+$(document).ready(function(){
+	$("#score-box").html(num_points);
+	$("#lives").html(num_lives);
+	initializeGame();
+	firstLife = false;
 
-	$("#start-button").click(startGame);
-	$("#back-btn").click(backToMainMenu);
-
-	if(game_mode_on) {
-		smurf = new smurf();
-		smurf.coordinates.x_coord = 7;
-		smurf.coordinates.y_coord = 0;
-		$('#smurf').css("top", smurf.coordinates.y_coord*STANDARD_SIZE);
-		$('#smurf').css("left", smurf.coordinates.x_coord*STANDARD_SIZE);
-		pooka1_steps = new LinkedList();
-		pooka2_steps = new LinkedList();
-		dragon1_steps = new LinkedList();
-		dragon2_steps = new LinkedList();
+}); 
 
 
-		//intialize tunnel array
-		space_has_tunnel = new Array(MAX_BOARD_HEIGHT);
-		for (var row1 = 0; row1 < MAX_BOARD_WIDTH; row1++) { 
-			space_has_tunnel[row1] = new Array(MAX_BOARD_WIDTH);
-			for (var col1 = 0; col1 < MAX_BOARD_HEIGHT; col1++) { 	
-				//first row never has a tunnel
-				if (0 == col1) { 
-					space_has_tunnel[row1][col1] = true;
-				}
-				else { 
-					space_has_tunnel[row1][col1] = false;
-				}
+
+function initializeGame(){ 
+
+
+smurf = new Smurf();
+smurf.coordinates.x_coord = 7;
+smurf.coordinates.y_coord = 1;
+$('#smurf').css("top", smurf.coordinates.y_coord*STANDARD_SIZE);
+$('#smurf').css("left", smurf.coordinates.x_coord*STANDARD_SIZE);
+pooka1_steps = new LinkedList();
+pooka2_steps = new LinkedList();
+dragon1_steps = new LinkedList();
+dragon2_steps = new LinkedList();
+
+//initialize bullet ptr as null
+bullet_ptr = null;
+
+//intialize tunnel array
+if(firstLife){
+	space_has_tunnel = new Array(MAX_BOARD_HEIGHT);
+	for (var row1 = 0; row1 < MAX_BOARD_WIDTH; row1++) { 
+		space_has_tunnel[row1] = new Array(MAX_BOARD_WIDTH);
+		for (var col1 = 0; col1 < MAX_BOARD_HEIGHT; col1++) { 	
+			//first row never has a tunnel
+			if (0 == col1) { 
+				space_has_tunnel[row1][col1] = true;
+			}
+			else { 
+				space_has_tunnel[row1][col1] = false;
 			}
 		}
+	}
+
+	var block = ""
+
+	for ( var row = 1; row < MAX_BOARD_HEIGHT; row++) {
+		for( var col = 0 ; col < MAX_BOARD_WIDTH ; col++ ){
 		
-
-		//game begins
-		// $("#start-button").click({
+			block = "<img class='blocks' style='left:" + col*30 + ";top:" + ((row*STANDARD_SIZE + 30)) + "' src='";
 			
-		// });
-	    
+			//add smurf
+			if (1 == row && 7 == col) { 
+				let smurf_guy = `<img src="img/character_walk.png" style="left:` + col*30 
+														+ `;top:30px;" id="smurf" width="30" height="30">`;
+				$("#game-screen").append(smurf_guy);
+			}
 
-	    var block = ""
-
-	    for ( var row = 1; row < MAX_BOARD_HEIGHT; row++) {
-			for( var col = 0 ; col < MAX_BOARD_WIDTH ; col++ ){
-			
-				block = "<img class='blocks' style='left:" + col*30 + ";top:" + ((row*STANDARD_SIZE + 30)) + "' src='";
-				
-				//add smurf
-				if (1 == row && 7 == col) { 
-					let smurf_guy = `<img src="img/character_walk.png" style="left:` + col*30 
-															+ `;top:30px;" id="smurf" width="30" height="30">`;
-					$("#game-screen").append(smurf_guy);
-				}
-
-				if (row <=3) { //yellow
-					block += "img/ground_yellow.png" + "'>";
-				}
-				//middle tier
-				else if (row - 3 <= 3) { //orange
-				block += "img/ground_orange.png" + "'>";
+			if (row <=3) { //yellow
+				block += "img/ground_yellow.png" + "'>";
+			}
+			//middle tier
+			else if (row - 3 <= 3) { //orange
+			block += "img/ground_orange.png" + "'>";
 
 
-				}
-				//bottom tier
-				else { //red
-				block += "img/ground_red.png" + "'>";
+			}
+			//bottom tier
+			else { //red
+			block += "img/ground_red.png" + "'>";
 
-				}
-			
-				console.log(row);
-				console.log(col);
-				console.log(block);
-				$("#game-screen").append(block);
-			} //col
-			//append to div
-			console.log("HERE!");
+			}
+		
 			console.log(row);
 			console.log(col);
-		} //row
+			console.log(block);
+			$("#game-screen").append(block);
+		} //col
+		//append to div
+		console.log("HERE!");
+		console.log(row);
+		console.log(col);
+	} //row
 
-		initialize_tunnels();
-		initializeEnemies();
-		initializeRocks();
+	initialize_tunnels();
+	initializeRocks();
+}
 
-		//Pooka 1 initializing linked list
-		for(let j = 12; j >= 5; j--) {
-			let tmp = new coordinate_pair(5, j);
-			pooka1_steps.push(tmp);
+
+
+initializeEnemies();
+
+//Pooka 1 initializing linked list
+for(let j = 12; j > 4; j--) {
+	let tmp = new coordinate_pair(5, j);
+	pooka1_steps.push(tmp);
+}
+pooka1_steps.push(new coordinate_pair(6, 5));
+pooka1_steps.push(new coordinate_pair(7, 5));
+
+//Pooka 2 initializing linked list
+for(let j = 12; j > 4; j--) {
+	let tmp = new coordinate_pair(13, j);
+	pooka2_steps.push(tmp);
+}
+for(let j = 12; j >= 7; j--) {
+	let tmp = new coordinate_pair(j,5);
+	pooka2_steps.push(tmp);
+}
+
+//Dragon 1 initializing linked list
+dragon1_steps.push(new coordinate_pair(6, 5));
+dragon1_steps.push(new coordinate_pair(7, 5));
+
+//Dragon 2 initializing linked list
+for(let j = 12; j >= 7; j--) {
+	let tmp = new coordinate_pair(j,5);
+	dragon2_steps.push(tmp);
+}
+
+for(let j = 4; j > 0; j--) {
+	pooka1_steps.push(new coordinate_pair(7, j));
+	pooka2_steps.push(new coordinate_pair(7, j));
+	dragon1_steps.push(new coordinate_pair(7, j));
+	dragon2_steps.push(new coordinate_pair(7, j));
+}
+if(firstLife){
+	$(window).keydown(keydownRouter);
+		setInterval( function() {
+		actuate_movement_cache();
+		checkIfKilledEnemies();
+		if ($('#pooka1').length != 0) {
+			check_if_killed(parseInt($("#pooka1").css('left')) , parseInt($("#pooka1").css('top')));
 		}
-		pooka1_steps.push(new coordinate_pair(6, 5));
-		pooka1_steps.push(new coordinate_pair(7, 5));
-
-		//Pooka 2 initializing linked list
-		for(let j = 12; j >= 5; j--) {
-			let tmp = new coordinate_pair(13, j);
-			pooka2_steps.push(tmp);
+		if ($('#pooka2').length != 0) {
+			check_if_killed(parseInt($("#pooka2").css('left')) , parseInt($("#pooka2").css('top')));
+	
 		}
-		for(let j = 12; j >= 7; j--) {
-			let tmp = new coordinate_pair(j,5);
-			pooka2_steps.push(tmp);
+		if ($('#dragon1').length != 0) {
+			check_if_killed(parseInt($("#dragon1").css('left')) , parseInt($("#dragon1").css('top')));
+		
 		}
-
-		//Dragon 1 initializing linked list
-		dragon1_steps.push(new coordinate_pair(6, 5));
-		dragon1_steps.push(new coordinate_pair(7, 5));
-
-		//Dragon 2 initializing linked list
-		for(let j = 12; j >= 7; j--) {
-			let tmp = new coordinate_pair(j,5);
-			dragon2_steps.push(tmp);
+		if ($('#dragon2').length != 0) {		
+			check_if_killed(parseInt($("#dragon2").css('left')) , parseInt($("#dragon2").css('top')));		
 		}
+		
+	}, 200);
 
-		for(let j = 4; j >= 1; j--) {
-			pooka1_steps.push(new coordinate_pair(7, j));
-			pooka2_steps.push(new coordinate_pair(7, j));
-			dragon1_steps.push(new coordinate_pair(7, j));
-			dragon2_steps.push(new coordinate_pair(7, j));
+	$(window).keydown(keydownRouter);
+		setInterval( function() {
+		move();
+		checkIfKilledEnemies();
+		if ($('#pooka1').length != 0) {
+			check_if_killed(parseInt($("#pooka1").css('left')) , parseInt($("#pooka1").css('top')));
 		}
-		$(window).keydown(keydownRouter);
-			setInterval( function() {
-			actuate_movement_cache();
-			move();
-		}, 500);
-
-		var smurf_char = $("#smurf");
-		var pooka1 = $("#pooka1");
-		var pooka2 = $("#pooka2");
-		var dragon1 = $("#dragon1");
-		var dragon2 = $("#dragon2");
-
-		if(isColliding(smurf_char, pooka1) || isColliding(smurf_char, pooka2) || isColliding(smurf_char, dragon1) || isColliding(smurf_char, dragon2)) {
-			num_lives--;
+		if ($('#pooka2').length != 0) {
+			check_if_killed(parseInt($("#pooka2").css('left')) , parseInt($("#pooka2").css('top')));
+	
 		}
+		if ($('#dragon1').length != 0) {
+			check_if_killed(parseInt($("#dragon1").css('left')) , parseInt($("#dragon1").css('top')));
+		
+		}
+		if ($('#dragon2').length != 0) {		
+			check_if_killed(parseInt($("#dragon2").css('left')) , parseInt($("#dragon2").css('top')));		
+		}
+	}, 500);
+
+	$(window).keydown(keydownRouter);
+		setInterval(function() {
+			moveBullet();
+	}, 300);
+
+	$(window).keydown(keydownRouter);
+		setInterval(function() {
+		
+
+
+	}, 200);
+}	
+
+}
+function check_if_killed(css_left_enemy, css_top_enemy) {
+	let x_smurf = smurf.coordinates.x_coord;
+	let y_smurf = smurf.coordinates.y_coord;
+	let x_enemy = (css_left_enemy - (css_left_enemy % STANDARD_SIZE))/STANDARD_SIZE;
+	let y_enemy = (css_top_enemy - (css_top_enemy % STANDARD_SIZE))/STANDARD_SIZE;
+
+	if (0 == (x_smurf - x_enemy) && 0 == (y_smurf-y_enemy)) { 
+		num_lives--;
+		$("#lives").html(num_lives);
+		$('#pooka1').remove();
+		$('#pooka2').remove();
+		$('#dragon1').remove();
+		$('#dragon2').remove();
+		check_game_over();
+		initializeGame();
+
 	}
-});
-
-function startGame() {
-	game_mode_on = true;
-	$('.main-screen').show().hide();
-    $('.game-screen').hide().show();
-    $('.game-over').show().hide();
 }
 
-function backToMainMenu() {
-	game_mode_on = false;
-	$('.main-screen').hide().show();
-    $('.game-screen').show().hide();
-    $('.game-over').show().hide();
-	window.reload();
+function check_game_over() {
+	alert("Game Over");
+	$("#game-over").show();
+	$("#game-screen").hide();
+	$("#final-score").html(num_points);
 }
+
+
+//changes direction in which the smurf is pointing
+function changeDirection(dir) {
+
+	//direction of smurf is left
+	if(dir == LEFT) {
+	 	$("#smurf").attr('src', 'img/character_walk_left.png');
+	}
+	//direction of smurf is right
+	if(dir == RIGHT) {
+	 	$("#smurf").attr('src', 'img/character_walk.png');
+	}
+	//direction of smurf is upwards
+	if(dir == UP) {
+	 	$("#smurf").attr('src', 'img/character_walk_up.png');
+	 }
+	 //direction of smurf is downwards
+	 if(dir == DOWN) {
+	 	$("#smurf").attr('src', 'img/character_walk_down.png');
+	 }
+	 smurf.direction = dir; //sets the smurf's new direction
+};
+
+function enemyThere(x_next, y_next, enemy_looking) { 
+	
+
+	if (enemy_looking != "pooka1" && (parseInt($('#pooka1').css('left')) == x_next) 
+							&& (parseInt($('#pooka1').css('top')) == y_next))  { 
+		console.log("true pooka1");
+		return true;
+	}
+	if (enemy_looking != "pooka2" && (parseInt($('#pooka2').css('left')) == x_next) 
+							&& (parseInt($('#pooka2').css('top')) == y_next))  { 
+		console.log("true pooka2");
+		return true;
+	}
+	if (enemy_looking != "dragon1" && (parseInt($('#dragon1').css('left')) == x_next) 
+							&& (parseInt($('#dragon1').css('top')) == y_next))  { 
+		console.log("true dragon1");
+		return true;
+	}
+	if (enemy_looking != "dragon2" && (parseInt($('#dragon2').css('left')) == x_next) 
+							&& (parseInt($('#dragon2').css('top')) == y_next))  { 
+		console.log("true dragon2");
+		return true;
+	}
+	return false;
+}
+
 //moves any character to a new space and removes wall
 function move() {
 
 	//updates coordinates of pooka 1 
 	let coords = pooka1_steps.head;
-	$("#pooka1").css("left", (coords.value.x_coord * STANDARD_SIZE));
-	$("#pooka1").css("top", (coords.value.y_coord * STANDARD_SIZE));
-	pooka1_steps.delete_first_elt();
-	console.log("Pooka 1 x: " + (coords.value.x_coord * STANDARD_SIZE));
-	console.log("Pooka 1 y: " + (coords.value.y_coord * STANDARD_SIZE));
+	//don't move if enemy there
+	if ($('#pooka1').length != 0 && !enemyThere(coords.value.x_coord*STANDARD_SIZE, coords.value.y_coord*STANDARD_SIZE, "pooka1")) {
+		$( "#pooka1" ).animate({
+	    	top: coords.value.y_coord * STANDARD_SIZE,
+	    	left: coords.value.x_coord * STANDARD_SIZE
+	  	}, 500);
+	  	pooka1_steps.delete_first_elt();
+	  	check_if_killed(coords.value.x_coord, coords.value.y_coord);
+	  }
 
-	coords = pooka2_steps.head;
-	$("#pooka2").css("left", (coords.value.x_coord * STANDARD_SIZE));
-	$("#pooka2").css("top", (coords.value.y_coord * STANDARD_SIZE));
-	pooka2_steps.delete_first_elt();
-	console.log("Pooka 2 x: " + (coords.value.x_coord * STANDARD_SIZE));
-	console.log("Pooka 2 y: " + (coords.value.y_coord * STANDARD_SIZE));
+  	coords = pooka2_steps.head;
+
+  	if ($('#pooka2').length != 0 && !enemyThere(coords.value.x_coord*STANDARD_SIZE, coords.value.y_coord*STANDARD_SIZE, "pooka2") ) {
+
+	  	$( "#pooka2" ).animate({
+	    	top: coords.value.y_coord * STANDARD_SIZE,
+	    	left: coords.value.x_coord * STANDARD_SIZE
+	  	}, 500);
+	  	pooka2_steps.delete_first_elt();
+		check_if_killed(coords.value.x_coord, coords.value.y_coord);
+	}
 
 	coords = dragon1_steps.head;
-	$("#dragon1").css("left", (coords.value.x_coord * STANDARD_SIZE));
-	$("#dragon1").css("top", (coords.value.y_coord * STANDARD_SIZE));
-	dragon1_steps.delete_first_elt();
-	console.log("Dragon 1 x: " + (coords.value.x_coord * STANDARD_SIZE));
-	console.log("Dragon 1 y: " + (coords.value.y_coord * STANDARD_SIZE));
+	if ($('#dragon1').length != 0 && 
+				!enemyThere(coords.value.x_coord*STANDARD_SIZE, coords.value.y_coord*STANDARD_SIZE, "dragon1")) {
 
+	  	$( "#dragon1" ).animate({
+	    	top: coords.value.y_coord * STANDARD_SIZE,
+	    	left: coords.value.x_coord * STANDARD_SIZE
+	  	}, 500);
+		dragon1_steps.delete_first_elt();
+		check_if_killed(coords.value.x_coord, coords.value.y_coord);
+	}
 	coords = dragon2_steps.head;
-	$("#dragon2").css("left", (coords.value.x_coord * STANDARD_SIZE));
-	$("#dragon2").css("top", (coords.value.y_coord * STANDARD_SIZE));
-	dragon2_steps.delete_first_elt();
+	if ($('#dragon2').length != 0 && !enemyThere( coords.value.x_coord*STANDARD_SIZE, coords.value.y_coord*STANDARD_SIZE, "dragon2")) {
 
-	console.log("Dragon 2 x: " + (coords.x_coord * STANDARD_SIZE));
-	console.log("Dragon 2 y: " + (coords.y_coord * STANDARD_SIZE));
+	  	$( "#dragon2" ).animate({
+	    	top: coords.value.y_coord * STANDARD_SIZE,
+	    	left: coords.value.x_coord * STANDARD_SIZE
+	  	}, 500);
+	  	dragon2_steps.delete_first_elt();
+		check_if_killed(coords.value.x_coord, coords.value.y_coord);
+	}
+}
 
+//Get total number of lives for smurf
+function getNumLives() {
+	return num_lives;
+}
+
+//Get total number of points earned
+function getTotalPoints() {
+	return num_points;
+}
+
+//Add points for each points the player earns through making a tunnel or attacking an enemy
+function addPoints(points) {
+	num_points += points;
 }
 
 //check where smurf is and always moves closer
-function smurf_char_ai_move() { 
+function alien_ai_move() { 
 
 }
 
@@ -300,10 +513,10 @@ function create_tunnel(cp) {
 	//no tunnel
 	if (space_has_tunnel[parseInt(cp.x_coord)][parseInt(cp.y_coord)] == false) { 
 		var tunnel = `<img src="img/tunnel.png" class="tunnelclass" style="left:` + cp.x_coord*STANDARD_SIZE
-					+ `;top:` + cp.y_coord*STANDARD_SIZE +`px;" width="30" height="30">`;
+					+ `;top:` + cp.y_coord*STANDARD_SIZE +`px;">`;
 		$("#game-screen").append(tunnel);
 		space_has_tunnel[parseInt(cp.x_coord)][parseInt(cp.y_coord)] = true;
-	}//
+	}
 }
 
 function initialize_tunnels() { 
@@ -346,29 +559,29 @@ function initialize_tunnels() {
 
 function initializeEnemies() {
 	var dragon1 = `<img src="img/Fygar_Main_Screen.png" class="dragonclass" id="dragon1" style="left:` + 150
-					+ `px;top:` + 150 +`px;" width="30" height="30">`;
+					+ `px;top:` + 150 +`px;">`;
 	$("#game-screen").append(dragon1);
 	var dragon2 = `<img src="img/Fygar_Main_Screen.png" class="dragonclass" id="dragon2" style="left:` + 390
-					+ `px;top:` + 150 +`px;" width="30" height="30">`;
+					+ `px;top:` + 150 +`px;">`;
 
 	$("#game-screen").append(dragon2);
 	var pooka1 = `<img src="img/Pooka_Main_Screen.png" class="pookaclass" id="pooka1" style="left:` + 150
-					+ `px;top:` + 390 +`px;" width="30" height="30">`;
+					+ `px;top:` + 390 +`px;">`;
 	$("#game-screen").append(pooka1);
 	var pooka2 = `<img src="img/Pooka_Main_Screen.png" class="pookaclass" id="pooka2" style="left:` + 390
-					+ `px;top:` + 390 +`px;" width="30" height="30">`;
+					+ `px;top:` + 390 +`px;">`;
 	$("#game-screen").append(pooka2);
 }
 
 function initializeRocks() {
 	for(var i = 0; i < 16; i++) {
-		var rock = `<img src="img/falling_rock.png" class="rockclass" style="left:` + 30*i
-					+ `px;top:` + 510 +`px;" width="30" height="30">`;
+		var rock = `<img src="img/ground_darkred_rock.png" class="rockclass" style="left:` + 30*i
+					+ `px;top:` + 510 +`px;">`;
 		$("#game-screen").append(rock);
 	}
 	for(var i = 0; i < 16; i++) {
-		var rock = `<img src="img/falling_rock.png" class="rockclass" style="left:` + 30*i
-					+ `px;top:` + 540 +`px;" width="30" height="30">`;
+		var rock = `<img src="img/ground_darkred_rock.png" class="rockclass" style="left:` + 30*i
+					+ `px;top:` + 540 +`px;">`;
 		$("#game-screen").append(rock);
 	}
 }
@@ -390,7 +603,15 @@ function smurf_move(next_movement) {
 	
 	//move smurf to new position
 
+
+	$('#smurf').css("top", y * 8 );
+	$('#smurf').css("top", y * 15 );
+	$('#smurf').css("top", y * 23 );
 	$('#smurf').css("top", y * 30 );
+	
+	$('#smurf').css("left", x * 8 );
+	$('#smurf').css("left", x * 15 );
+	$('#smurf').css("left", x * 23 );
 	$('#smurf').css("left", x * 30 );
 
 	console.log("new top: " + $('#smurf').css("top"));
@@ -401,6 +622,8 @@ function smurf_move(next_movement) {
 
 	//create tunnel behind image
 	if (!space_has_tunnel[next_movement.x_coord][next_movement.y_coord]) { 
+		num_points += 100;
+		$("#score-box").html(num_points);
 		create_tunnel(next_movement);
 	}
 	pooka1_steps.push(new coordinate_pair(x, y));
@@ -419,12 +642,15 @@ function clear_space() {
 //performs next movement in cache
 function actuate_movement_cache() { 
 	//no movement to perform
-	if (movement_cache_size == 0) { 
+
+
+	if (movement_cache.length == 0) { 
 		return;
 	}
 	else { 
-		smurf_move(movement_cache[movement_cache_size - 1]);
-		--movement_cache_size; //performed movement
+
+		var i = movement_cache.shift();
+		smurf_move(i);
 	}
 }
 
@@ -436,70 +662,170 @@ function add_to_movement_cache(x, y) {
 	
 	//check if valid movement!
 
-	//-2 for rocks
-	if(x<0 || y<0 || x >= MAX_BOARD_WIDTH || y >= MAX_BOARD_HEIGHT - 1){
+
+	if(x < 0){
 		tmp.x_coord = 0;
-		tmp.y_coord = 0;
-		 //don't want negative values AKA him going off screen
-		 return;
 	}
-	
+
+	else if(y < 1){
+		tmp.y_coord = 1;
+	}
+
+	else if (x >= MAX_BOARD_WIDTH){
+		tmp.x_coord = MAX_BOARD_WIDTH - 1;
+	}
+
+	else if (y >= MAX_BOARD_HEIGHT - 1){
+		tmp.y_coord = MAX_BOARD_HEIGHT - 2;
+	}
+
+	console.log("before: ");
+	console.log(movement_cache);
+	console.log(movement_cache.length);
+
 	//don't make larger or will lag
-	if (movement_cache_size == 5) { 
-		movement_cache[5] = tmp;
+	if (movement_cache.length == 1) {
+		movement_cache[0] = tmp;
 	}
+
 	//add to cache
 	else { 
-		movement_cache[movement_cache_size] = tmp;
-		++movement_cache_size;
+		console.log("pushing");
+		console.log(tmp);
+
+		movement_cache.push(tmp);
+
+
+		console.log("after: ");
+		console.log(movement_cache);
+		console.log(movement_cache.length);
+	}
+
+}
+
+function addBullet() {
+	//no bullet shot yet
+	if (null == bullet_ptr) { 
+
+		let bulletTMP = new bullet(new coordinate_pair(smurf.coordinates.x_coord, smurf.coordinates.y_coord), smurf.direction);
+		bullet_ptr = bulletTMP;
+			$('#bullet').attr('src', 'img/vertical_bullet.png');
+
+		if((LEFT == smurf.direction) || (RIGHT == smurf.direction))	{
+
+			$("#game-screen").append('<img id="bullet" class="bulletClass" style="top:' + smurf.coordinates.y_coord*STANDARD_SIZE + ';left:' +
+			smurf.coordinates.x_coord*STANDARD_SIZE + ';" src="img/bullet.png">');
+		}
+		else{
+
+
+			$("#game-screen").append('<img id="bullet" class="bulletClass" style="top:' + smurf.coordinates.y_coord*STANDARD_SIZE + ';left:' +
+			smurf.coordinates.x_coord*STANDARD_SIZE + ';" src="img/vertical_bullet.png">');
+		}
 	}
 }
 
-function getCurrentScore() {
-	return total_score;
-}
-
-//checks for collisions between smurf and bad guys
-// Check if two objects are colliding
-function isColliding(smurf_char, enemy_char) {
-  // Define input direction mappings for easier referencing
-  var o1D = { 'left': parseInt(smurf_char.css('left')),
-          'right': parseInt(smurf_char.css('left')) +(smurf_char.width()),
-          'top': parseInt(smurf_char.css('top')),
-          'bottom': parseInt(smurf_char.css('top')) +(smurf_char.height())
-        };
-  
-  var o2D = { 'left': parseInt(enemy_char.css('left')),
-          'right': parseInt(enemy_char.css('left')) +(enemy_char.width()),
-          'top': parseInt(enemy_char.css('top')),
-          'bottom': parseInt(enemy_char.css('top')) +(enemy_char.height())
-        };
-
-  // If horizontally overlapping...
-  if ( (o1D.left < o2D.left && o1D.right > o2D.left) ||
-       (o1D.left < o2D.right && o1D.right > o2D.right) ||
-       (o1D.left < o2D.right && o1D.right > o2D.left) ) {
-
-    
-
-    if ( (o1D.top > o2D.top && o1D.top < o2D.bottom) ||
-         (o1D.top < o2D.top && o1D.bottom > o2D.top) ||
-         (o1D.top > o2D.top && o1D.bottom < o2D.bottom) ) {
-
-      // Collision!   
-      return true;
-    }
-  }
-
-  return false;
-}
-
-function checkGameOver() {
-	if(num_lives == 0) {
-		$('.main-screen').show().hide();
-		$('.game-screen').show().hide();
-   	 	$('.game-over').hide().show();	
+function moveBullet() {
+	//if a bullet is in the air
+	if (bullet_ptr != null) { 
+		let left_coords = parseInt($('#bullet').css('left'));
+		let top_coords = parseInt($('#bullet').css('top'));
+		if (bullet_ptr.direction == LEFT) { 
+			//remove element
+			if (left_coords - STANDARD_SIZE < 0 || !space_has_tunnel[(left_coords - STANDARD_SIZE)/STANDARD_SIZE][top_coords / STANDARD_SIZE]) { 
+				$('#bullet').remove();
+				bullet_ptr = null;
+			}
+			//move it over
+			else { 
+				$('#bullet').css('left', left_coords - STANDARD_SIZE);
+			}
+		}
+		else if (bullet_ptr.direction == RIGHT) { 
+		//remove element
+			if ( (left_coords + STANDARD_SIZE > (MAX_BOARD_WIDTH-1)*STANDARD_SIZE)  || (!space_has_tunnel[(left_coords + STANDARD_SIZE)/STANDARD_SIZE][top_coords / STANDARD_SIZE]) ) { 
+				$('#bullet').remove();
+				bullet_ptr = null;
+			}
+			//move it over
+			else { 
+				$('#bullet').css('left', left_coords + STANDARD_SIZE);
+			}
+		}
+		else if (bullet_ptr.direction == UP) { 
+		//remove element
+			if (top_coords - STANDARD_SIZE < 0 || (!space_has_tunnel[(left_coords)/STANDARD_SIZE][(top_coords - STANDARD_SIZE) / STANDARD_SIZE])) { 
+				$('#bullet').remove();
+				bullet_ptr = null;
+			}
+			//move it over
+			else { 
+				$('#bullet').css('top', top_coords - STANDARD_SIZE);
+			}
+		}
+		else { //DOWN
+		//remove element
+			if (top_coords + STANDARD_SIZE > (MAX_BOARD_HEIGHT-1)*STANDARD_SIZE || (!space_has_tunnel[left_coords/STANDARD_SIZE][(top_coords + STANDARD_SIZE) / STANDARD_SIZE]) ) { 
+				$('#bullet').remove();
+				bullet_ptr = null;
+			}
+			//move it over
+			else { 
+				$('#bullet').css('top', top_coords + STANDARD_SIZE);
+			}
+		}
 	}
-	game_mode_on = false;
-	$("#final-score").html("Your score: " + getCurrentScore());
+	checkIfKilledEnemies();
 }
+
+function checkIfKilledEnemies() { 
+	let bullet_coord_x = parseInt($('#bullet').css('left') );
+	let bullet_coord_y = parseInt($('#bullet').css('top') );
+	
+	//bullet collides with enemy
+	if ( (Math.abs(parseInt($("#pooka1").css("left")) - bullet_coord_x) < 20)
+					&& Math.abs(parseInt($("#pooka1").css("top")) - bullet_coord_y) < 20) { 
+		
+		$("#pooka1").attr('src', 'img/explosion.png');
+		setTimeout(function(){ $("#pooka1").remove(); }, 150);
+
+		$('#bullet').remove();
+	    bullet_ptr = null;
+	}
+		//bullet collides with enemy
+	else if ( (Math.abs(parseInt($("#pooka2").css("left")) - bullet_coord_x) < 20)
+					&& Math.abs(parseInt($("#pooka2").css("top")) - bullet_coord_y) < 20) { 
+
+		$("#pooka2").attr('src', 'img/explosion.png');
+		setTimeout(function(){ $("#pooka2").remove(); }, 150);
+
+		$('#bullet').remove();
+		bullet_ptr = null;
+	}
+		//bullet collides with enemy
+	else if ( (Math.abs(parseInt($("#dragon1").css("left")) - bullet_coord_x) < 20)
+					&& Math.abs(parseInt($("#dragon1").css("top")) - bullet_coord_y) < 20) { 
+		$("#dragon1").attr('src', 'img/explosion.png');
+		setTimeout(function(){ 
+
+			$("#dragon1").css('visibility', 'hidden');
+			$("#dragon1").remove();
+
+
+		 }, 150);
+		$('#bullet').remove();
+				bullet_ptr = null;
+	}
+		//bullet collides with enemy
+	else if ( (Math.abs(parseInt($("#dragon2").css("left")) - bullet_coord_x) < 20)
+					&& Math.abs(parseInt($("#dragon2").css("top")) - bullet_coord_y) < 20) { 
+		$("#dragon2").attr('src', 'img/explosion.png');
+		setTimeout(function(){ $("#dragon2").remove(); }, 150);
+		$('#bullet').remove();
+				bullet_ptr = null;
+	}	
+}
+
+
+
+
