@@ -384,10 +384,18 @@ function check_if_killed(css_left_enemy, css_top_enemy) {
 }
 
 function check_game_over() {
-	alert("Game Over");
-	$("#game-over").show();
+	if(num_lives == 0) {
+		alert("Game Over");
+		$("#game-over").show();
+		$("#game-screen").hide();
+		$("#final-score").html(num_points);
+    	}
+}
+
+function backBtn() {
 	$("#game-screen").hide();
-	$("#final-score").html(num_points);
+	$("#game-over").hide();
+	//$("#home).show();
 }
 
 
