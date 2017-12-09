@@ -63,6 +63,7 @@ var DOWN = 3;
 var num_lives = 3;
 var num_points = 0;
 var firstLife = true;
+var game_mode_on = false;
 
 
 function modifyEnemyMovement(keyDirection){
@@ -185,12 +186,23 @@ function keydownRouter(e) {
 	
 //main
 $(document).ready(function(){
+
+	$("#start-button").click(startGame);
+	
 	$("#score-box").html(num_points);
 	$("#lives").html(num_lives);
 	initializeGame();
 	firstLife = false;
 
 }); 
+
+function startGame() {
+	game_mode_on = true;
+}
+
+function check_if_game_mode_on() {
+	return game_mode_on == true;
+}
 
 
 
@@ -385,17 +397,18 @@ function check_if_killed(css_left_enemy, css_top_enemy) {
 
 function check_game_over() {
 	if(num_lives == 0) {
-		alert("Game Over");
+		//alert("Game Over");
+		game_mode_on = false;
 		$("#game-over").show();
 		$("#game-screen").hide();
 		$("#final-score").html(num_points);
-    	}
+    }
 }
 
 function backBtn() {
 	$("#game-screen").hide();
 	$("#game-over").hide();
-	//$("#home).show();
+	$("#home").show();
 }
 
 
@@ -799,6 +812,8 @@ function checkIfKilledEnemies() {
 
 		$('#bullet').remove();
 	    bullet_ptr = null;
+	    num_points += 200;
+	    $("#score-box").html(num_points);
 	}
 		//bullet collides with enemy
 	else if ( (Math.abs(parseInt($("#pooka2").css("left")) - bullet_coord_x) < 20)
@@ -809,6 +824,8 @@ function checkIfKilledEnemies() {
 
 		$('#bullet').remove();
 		bullet_ptr = null;
+		num_points += 200;
+		$("#score-box").html(num_points);
 	}
 		//bullet collides with enemy
 	else if ( (Math.abs(parseInt($("#dragon1").css("left")) - bullet_coord_x) < 20)
@@ -823,6 +840,8 @@ function checkIfKilledEnemies() {
 		 }, 150);
 		$('#bullet').remove();
 				bullet_ptr = null;
+		num_points += 400;
+		$("#score-box").html(num_points);
 	}
 		//bullet collides with enemy
 	else if ( (Math.abs(parseInt($("#dragon2").css("left")) - bullet_coord_x) < 20)
@@ -831,8 +850,22 @@ function checkIfKilledEnemies() {
 		setTimeout(function(){ $("#dragon2").remove(); }, 150);
 		$('#bullet').remove();
 				bullet_ptr = null;
-	}	
+		num_points += 400;
+		$("#score-box").html(num_points);
+	}
+	checkIfAllEnemiesKilled();	
 }
+
+function checkIfAllEnemiesKilled() {
+	if($("#pooka1").length == 0 && $("#pooka2").length == 0 && $("#dragon1").length == 0 && $("#dragon2").length == 0) {
+		console.log("All enemies killed");
+		setTimeout(function() {
+
+		}, 4000);
+		initializeGame();
+	}
+}
+
 
 
 
