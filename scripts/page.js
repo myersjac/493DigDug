@@ -191,7 +191,7 @@ $(document).ready(function(){
 	
 	$("#score-box").html(num_points);
 	$("#lives").html(num_lives);
-	initializeGame();
+	initializeGame(true);
 	firstLife = false;
 
 }); 
@@ -206,7 +206,7 @@ function check_if_game_mode_on() {
 
 
 
-function initializeGame(){ 
+function initializeGame(isFirstLevel){ 
 
 
 smurf = new Smurf();
@@ -223,13 +223,13 @@ dragon2_steps = new LinkedList();
 bullet_ptr = null;
 
 //intialize tunnel array
-if(firstLife){
+if(firstLife || !isFirstLevel){
 	space_has_tunnel = new Array(MAX_BOARD_HEIGHT);
 	for (var row1 = 0; row1 < MAX_BOARD_WIDTH; row1++) { 
 		space_has_tunnel[row1] = new Array(MAX_BOARD_WIDTH);
 		for (var col1 = 0; col1 < MAX_BOARD_HEIGHT; col1++) { 	
 			//first row never has a tunnel
-			if (0 == col1) { 
+			if (1 == row1) { 
 				space_has_tunnel[row1][col1] = true;
 			}
 			else { 
@@ -246,7 +246,7 @@ if(firstLife){
 			block = "<img class='blocks' style='left:" + col*30 + ";top:" + ((row*STANDARD_SIZE + 30)) + "' src='";
 			
 			//add smurf
-			if (1 == row && 7 == col) { 
+			if (1 == row && 7 == col && isFirstLevel) { 
 				let smurf_guy = `<img src="img/character_walk.png" style="left:` + col*30 
 														+ `;top:30px;" id="smurf" width="30" height="30">`;
 				$("#game-screen").append(smurf_guy);
@@ -547,6 +547,7 @@ function initialize_tunnels() {
 		tmp.x_coord = 5;
 		tmp.y_coord = i;
 		create_tunnel(tmp);
+	
 	}
 
 
@@ -753,7 +754,7 @@ function moveBullet() {
 		let top_coords = parseInt($('#bullet').css('top'));
 		if (bullet_ptr.direction == LEFT) { 
 			//remove element
-			if (left_coords - STANDARD_SIZE < 0 || !space_has_tunnel[(left_coords - STANDARD_SIZE)/STANDARD_SIZE][top_coords / STANDARD_SIZE]) { 
+			if (left_coords - STANDARD_SIZE < 0 || (!space_has_tunnel[(left_coords - STANDARD_SIZE)/STANDARD_SIZE][top_coords / STANDARD_SIZE]) ){ 
 				$('#bullet').remove();
 				bullet_ptr = null;
 			}
@@ -859,10 +860,11 @@ function checkIfKilledEnemies() {
 function checkIfAllEnemiesKilled() {
 	if($("#pooka1").length == 0 && $("#pooka2").length == 0 && $("#dragon1").length == 0 && $("#dragon2").length == 0) {
 		console.log("All enemies killed");
-		setTimeout(function() {
 
-		}, 4000);
-		initializeGame();
+
+		let isFirstLevel = false;
+
+		initializeGame(isFirstLevel);
 	}
 }
 
