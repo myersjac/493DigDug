@@ -186,6 +186,10 @@ $(document).ready(function(){
 
 $('#start-button').click(function() {
 
+	if(num_lives == 0 ){
+		location.reload();
+	}
+
 	if(firstLife){
 		$( "#banner" ).fadeOut( 2000);
 		$("#score-box").html(num_points);

@@ -1,6 +1,11 @@
 /* Main Containers */
 body{
   background: white;
+
+  cursor: pointer;
+
+  cursor: url('http://www.coinflation.com/sl_quarter.jpg'), pointer;
+
 }
 
 
@@ -31,7 +36,7 @@ body{
 
 .score-window{
   text-align: center;
-  color: red;
+  color: #5b9790;
 }
 
 #img-digdug-mainscreen {
@@ -44,6 +49,9 @@ body{
   margin:auto;
   display:block;
 }
+
+
+
 #options-button {
   margin:auto;
   display:block;
