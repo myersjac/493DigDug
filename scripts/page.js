@@ -151,9 +151,6 @@ var n = 3;
 
 function keydownRouter(e) {
   switch (e.which) {
-    case KEYS.shift:
-	  if (!gameover) { }
-      break;
     case KEYS.spacebar:
     // If you would like to add arrow button features
     	addBullet();
@@ -224,12 +221,14 @@ bullet_ptr = null;
 
 //intialize tunnel array
 if(firstLife || !isFirstLevel){
+
+
 	space_has_tunnel = new Array(MAX_BOARD_HEIGHT);
 	for (var row1 = 0; row1 < MAX_BOARD_WIDTH; row1++) { 
 		space_has_tunnel[row1] = new Array(MAX_BOARD_WIDTH);
-		for (var col1 = 0; col1 < MAX_BOARD_HEIGHT; col1++) { 	
+		for (var col1 = 0; col1 < MAX_BOARD_HEIGHT; col1++) {
 			//first row never has a tunnel
-			if (1 == row1) { 
+			if (1 == col1) { 
 				space_has_tunnel[row1][col1] = true;
 			}
 			else { 
@@ -385,6 +384,9 @@ function check_if_killed(css_left_enemy, css_top_enemy) {
 	if (0 == (x_smurf - x_enemy) && 0 == (y_smurf-y_enemy)) { 
 		num_lives--;
 		$("#lives").html(num_lives);
+		
+		$('#bullet').remove();
+		
 		$('#pooka1').remove();
 		$('#pooka2').remove();
 		$('#dragon1').remove();
@@ -644,6 +646,7 @@ function smurf_move(next_movement) {
 
 	//create tunnel behind image
 	if (!space_has_tunnel[next_movement.x_coord][next_movement.y_coord]) { 
+		
 		num_points += 100;
 		$("#score-box").html(num_points);
 		create_tunnel(next_movement);
@@ -863,7 +866,7 @@ function checkIfAllEnemiesKilled() {
 
 
 		let isFirstLevel = false;
-
+		$("#smurf").attr('src', 'img/character_walk.png');
 		initializeGame(isFirstLevel);
 	}
 }
