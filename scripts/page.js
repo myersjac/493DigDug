@@ -192,6 +192,8 @@ $('#start-button').click(function() {
 		$("#lives").html(num_lives);
 		initializeGame(true);
 		firstLife = false;
+		$("#game-over").hide();
+		$("#game-screen").show();
 	}	
 
 
@@ -411,7 +413,6 @@ function check_if_killed(css_left_enemy, css_top_enemy) {
 		$('#dragon2').remove();
 		check_game_over();
 		initializeGame(false);
-
 	}
 }
 
@@ -422,6 +423,8 @@ function check_game_over() {
 		$("#game-over").show();
 		$("#game-screen").hide();
 		$("#final-score").html(num_points);
+
+		firstLife = true;
     }
 }
 
