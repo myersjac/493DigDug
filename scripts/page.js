@@ -184,12 +184,21 @@ function keydownRouter(e) {
 //main
 $(document).ready(function(){
 
-	$("#start-button").click(startGame);
-	
-	$("#score-box").html(num_points);
-	$("#lives").html(num_lives);
-	initializeGame(true);
-	firstLife = false;
+$('#start-button').click(function() {
+
+	if(firstLife){
+		$( "#banner" ).fadeOut( 2000);
+		$("#score-box").html(num_points);
+		$("#lives").html(num_lives);
+		initializeGame(true);
+		firstLife = false;
+	}	
+
+
+
+});
+
+
 
 }); 
 
@@ -238,6 +247,11 @@ if(firstLife || !isFirstLevel){
 	}
 
 	var block = ""
+
+	$('.blocks').remove();
+	$('.tunnelclass').remove();
+
+
 
 	for ( var row = 1; row < MAX_BOARD_HEIGHT; row++) {
 		for( var col = 0 ; col < MAX_BOARD_WIDTH ; col++ ){
@@ -382,7 +396,11 @@ function check_if_killed(css_left_enemy, css_top_enemy) {
 	let y_enemy = (css_top_enemy - (css_top_enemy % STANDARD_SIZE))/STANDARD_SIZE;
 
 	if (0 == (x_smurf - x_enemy) && 0 == (y_smurf-y_enemy)) { 
-		num_lives--;
+		
+		if(num_lives > 0){
+			num_lives--;
+			$("#lives-box").text( num_lives);
+		}
 		$("#lives").html(num_lives);
 		
 		$('#bullet').remove();
@@ -392,7 +410,7 @@ function check_if_killed(css_left_enemy, css_top_enemy) {
 		$('#dragon1').remove();
 		$('#dragon2').remove();
 		check_game_over();
-		initializeGame();
+		initializeGame(false);
 
 	}
 }
@@ -864,6 +882,9 @@ function checkIfAllEnemiesKilled() {
 	if($("#pooka1").length == 0 && $("#pooka2").length == 0 && $("#dragon1").length == 0 && $("#dragon2").length == 0) {
 		console.log("All enemies killed");
 
+		let newLvl = parseInt( $("#level-box").text()) + 1 ;
+
+		$("#level-box").text( newLvl.toString() );
 
 		let isFirstLevel = false;
 		$("#smurf").attr('src', 'img/character_walk.png');

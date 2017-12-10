@@ -11,6 +11,11 @@
 
 <!-- HTML -->
 <body>
+
+<img src="img/banner.jpg" id="banner">
+
+
+
 <div class="super-container">
 	<div class='outer-container'>
 		<div class='game-window' id='game-window'>
@@ -33,28 +38,23 @@
 				
 				<div id="game-over" style="display:none">
 				 	<h1 style="color:white" align="center">Game Over</h1>
-	      				<h2 style="color:white" align="center" id="final-score">Your score: </h2>
-	      				<input type="button" id="back-btn" align="center" value = "Go Back">
+      				<h2 style="color:white" align="center" id="final-score-1">Your score: </h2>
+      				<h2 style="color:white" align="center" id="final-score"></h2>
+      				<h2 style="color:white" align="center" id="refresh">Please refresh to play again </h2>
 				</div>
 			</div>
 		</div>
 		<div class= "score-window">
 			      <h3>Welcome!</h3>
 			      <hr>
+			      <p>Level:</p>
+			      <h1 id='level-box'>1</h1>
+			      <p>Score:</p>
+			      <h1 id='score-box'>0</h1>
+			      <p>Lives:</p>
+			      <h1 id='lives-box'>3</h1>
 			      <br>
-			      <p>score:</p>
-			      <h1 id='score-box'></h1>
-			      <br>
-			      <br>
-			      <br>
-			      <br>
-			      <br>
-			      <button type="button" id="settings-button">Open Settings Panel</button>
-			      <div id="settings-panel">
-
-			      <input type="checkbox" id="Mute" name="Mute" value="Muted" checked>
-			      <label for="Mute">Mute?</label>
-
+			      <button type="button" id="start-button"><img src="img/quarter.jpg"></button>
 
 					</div>
 				</div>
